@@ -1,11 +1,13 @@
 import Link from "next/link";
 
+import { WhatItFound, WhyThisExists } from "@/components/home/Story";
 import { Callout } from "@/components/ui/Callout";
 import { A, Main, PageHeader } from "@/components/ui/Page";
 import { DotPlot, type DotRow } from "@/components/viz/DotPlot";
 import { LossCurves } from "@/components/widgets/lazy";
 import { simResults } from "@/lib/data/load";
 import { lossSeries } from "@/lib/experiment/props";
+import { findings } from "@/lib/findings";
 import { fixed, trim } from "@/lib/format";
 import { breakEven, G, loss, lossSd, mb, row } from "@/lib/quote";
 import { DECKS, deck, DEMO_PAPER, HUB_URL, MODULE_PAPER } from "@/lib/site";
@@ -54,13 +56,15 @@ const PAGES = [
 ] as const;
 
 /**
- * Landing page: the question and the answer in one picture (the loss
- * curves, then the final losses), then what the module could and could not
- * do (the simulation's time to the target), then the pages, the hub and the
- * five decks.
+ * Landing page: the question; why this investigation exists (the process,
+ * step by step) and what it found (each number read from the vendored
+ * results); then the answer in one picture (the loss curves, then the final
+ * losses), what the module could and could not do (the simulation's time to
+ * the target), the pages, the hub and the five decks.
  */
 export default function HomePage(): JSX.Element {
   const target = fixed(TARGETS[0]![0], 3);
+  const found = findings();
   const series = lossSeries();
   const show = [G.A, G.B, G.C1d256, G.Frandom, G.E10];
   const hero: string[] = [...show, G.C2d, G.D, G.E8, G.Ectrl];
@@ -171,7 +175,10 @@ export default function HomePage(): JSX.Element {
         </p>
       </PageHeader>
 
-      <div className="mt-10 grid items-start gap-6">
+      <WhyThisExists f={found} />
+      <WhatItFound f={found} />
+
+      <div className="mt-12 grid items-start gap-6">
         <div className="min-w-0">
           <h2 className="text-xl font-semibold tracking-tight">
             The answer, in one picture

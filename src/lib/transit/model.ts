@@ -74,6 +74,11 @@ export const TARGETS = C.targets as [number, string][];
 export const ENOBS = C.enobs;
 export const PLANES = C.planes;
 export const CATEGORIES = C.categories as Category[];
+/** results.md section 10: the model sizes (null: the experiment's) and the sync intervals H. */
+export const EXTRAPOLATE = C.extrapolate as {
+  sizes: [string, number | null][];
+  sync_every: number[];
+};
 export type Category =
   | "compute"
   | "intra-DC link"
@@ -111,6 +116,10 @@ export type Config = {
   module: Module;
   /** In-transit variants: the exact band's (C's) steps instead of E's. */
   exactSteps?: boolean;
+  /** Parameters (default: the experiment's). Any other size is an extrapolation (results.md section 10). */
+  params?: number;
+  /** Sync every H steps, DiLoCo-style (default 1). H > 1 is an extrapolation (results.md section 10). */
+  syncEvery?: number;
 };
 
 /** A module setting of results.md, optionally with ENOB, planes or budget changed. */
@@ -237,7 +246,7 @@ export type Plan = {
 const GPU_EXTRA = C.gpu_flops_per_value as Record<string, number>;
 
 export function plan(cfg: Config): Plan {
-  const P = SETUP.params;
+  const P = cfg.params ?? SETUP.params;
   const tokens = SETUP.tokens_per_worker;
   const dense = bytesPerParam(LAB.adamw) * P;
   const flops = 6.0 * P * tokens;
@@ -395,9 +404,9 @@ export function syncTime(p: Plan): number {
   );
 }
 
-/** analytic.step_time: compute plus one sync (syncing every step). */
+/** analytic.step_time: compute plus one sync every `syncEvery` steps. */
 export function stepTime(p: Plan): number {
-  return p.computeS + syncTime(p) / 1;
+  return p.computeS + syncTime(p) / (p.cfg.syncEvery ?? 1);
 }
 
 /** analytic.wire_per_worker: bytes a worker sends per sync. */
@@ -419,9 +428,11 @@ export function wirePerWorker(p: Plan): number {
 
 /** Share of the step each category holds (engine.Result.hot_spots). */
 export function hotSpots(p: Plan): Record<Category, number> {
+  // the engine runs H computes per sync: the sync's rounds count once in H steps
+  const H = p.cfg.syncEvery ?? 1;
   const terms = [
     { seconds: p.computeS, category: "compute" as Category },
-    ...syncTerms(p),
+    ...syncTerms(p).map((x) => ({ ...x, seconds: x.seconds / H })),
   ];
   const total = stepTime(p);
   const out = Object.fromEntries(CATEGORIES.map((c) => [c, 0])) as Record<

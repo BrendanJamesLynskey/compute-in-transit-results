@@ -3,27 +3,40 @@ import type { Metadata } from "next";
 import { StepEq, StreamEq } from "@/components/mdx/equations";
 import { Callout } from "@/components/ui/Callout";
 import { A, Main, PageHeader, Section } from "@/components/ui/Page";
+import { DotPlot, type DotRow } from "@/components/viz/DotPlot";
 import {
   BreakEven,
   StageBars,
   TransitExplorer,
+  WanQueue,
 } from "@/components/widgets/lazy";
 import type { RecordedPoint } from "@/components/widgets/TransitExplorer";
+import type { QueueRow } from "@/components/widgets/WanQueue";
 import { simMd, simResults } from "@/lib/data/load";
-import { fixed } from "@/lib/format";
-import { section, tableAfter } from "@/lib/md";
+import { fixed, trim } from "@/lib/format";
+import { section, tableAfter, type Table } from "@/lib/md";
 import { breakEven, simCell } from "@/lib/quote";
 import { deck, fileAt, MODULE_PAPER, SIM_REPO } from "@/lib/site";
 import {
+  EXTRAPOLATE,
+  HYPOTHETICAL,
+  hotSpot,
+  LETTER,
+  moduleOf,
+  plan,
   SETUP,
   TARGETS,
+  timeTo,
+  topology,
   TRANSIT,
   VARIANT_NAME,
   VARIANTS,
+  type Config,
   type ModuleKey,
   type Variant,
 } from "@/lib/transit/model";
-import { BASE, TOPOLOGY_PRESETS } from "@/lib/transit/presets";
+import { BASE, preset, TOPOLOGY_PRESETS } from "@/lib/transit/presets";
+import { VARIANT_COLOUR } from "@/lib/viz/palette";
 
 export const metadata: Metadata = {
   title: "The simulation",
@@ -55,6 +68,78 @@ function recorded(): RecordedPoint[] {
   return out;
 }
 
+/** A results.md row name → its variant and module setting. */
+function parseName(name: string): { variant: Variant; module: ModuleKey } {
+  const m = /^(.*?)(?: \[(low|high|free)\])?$/.exec(name)!;
+  const variant = VARIANTS.find((x) => VARIANT_NAME[x] === m[1]) as Variant;
+  return { variant, module: (m[2] as ModuleKey | undefined) ?? "high" };
+}
+
+function short(v: Variant, module?: ModuleKey): string {
+  const tag = TRANSIT.includes(v) && module ? ` [${module}]` : "";
+  return `${LETTER[v]}${tag} · ${HYPOTHETICAL.includes(v) ? "hypothetical" : VARIANT_NAME[v].slice(3).split(",")[0]}`;
+}
+
+const QUEUE_NAME: Record<Variant, string> = {
+  adamw: "AdamW",
+  topk: "top-k",
+  band: "band",
+  "band-pluggable": "pluggable",
+  "band-allreduce": "not run",
+  "band-switch": "not run",
+};
+
+/** Section 9's recorded runs (results.json), for the queueing animation. */
+function queueRows(): QueueRow[] {
+  return Object.entries(simResults().background).map(([name, b]) => {
+    const { variant } = parseName(name);
+    return {
+      key: variant,
+      label: `${LETTER[variant]} · ${QUEUE_NAME[variant]}`,
+      analytic: b.analytic,
+      loads: b.loads,
+      step: b.step,
+      hypothetical: HYPOTHETICAL.includes(variant),
+    };
+  });
+}
+
+/** A config on the base topology (results.md section 10). */
+function base(variant: Variant, module: ModuleKey): Config {
+  const p = preset(BASE);
+  return { variant, module: moduleOf(module), topo: topology(p.dcs, p.bw) };
+}
+
+function MdTable({ t, label }: { t: Table; label: string }): JSX.Element {
+  return (
+    <div
+      className="mt-4 min-w-0 overflow-x-auto"
+      tabIndex={0}
+      role="region"
+      aria-label={label}
+    >
+      <table className="text-xs">
+        <thead>
+          <tr>
+            {t.header.map((h) => (
+              <th key={h}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {t.rows.map((r, i) => (
+            <tr key={i}>
+              {r.map((c, j) => (
+                <td key={j}>{c}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default function TransitPage(): JSX.Element {
   const target = fixed(TARGETS[0]![0], 3);
   const md = simMd();
@@ -77,6 +162,36 @@ export default function TransitPage(): JSX.Element {
     "free",
     "E",
   );
+  const t9 = tableAfter(md, "## 9. Queueing");
+  const q9 = (name: string, col: string) => {
+    const j = t9.header.indexOf(col);
+    const r = t9.rows.find((x) => x[0] === name);
+    if (j < 0 || !r) throw new Error(`results.md 9: no ${name} / ${col}`);
+    return r[j]!;
+  };
+  const t10a = tableAfter(md, "## 10. Extrapolations", 0);
+  const t10b = tableAfter(md, "## 10. Extrapolations", 1);
+  const q10h = (name: string, col: string) => {
+    const j = t10b.header.indexOf(col);
+    const r = t10b.rows.find((x) => x[0] === name);
+    if (j < 0 || !r) throw new Error(`results.md 10: no ${name} / ${col}`);
+    return r[j]!;
+  };
+  const llama = EXTRAPOLATE.sizes.at(-1)![1]!;
+  const sizeRows: DotRow[] = t10a.rows.map((r) => {
+    const { variant, module } = parseName(r[0]!);
+    const c = { ...base(variant, module), params: llama };
+    const t = timeTo(c);
+    return {
+      key: r[0]!,
+      label: short(variant, TRANSIT.includes(variant) ? module : undefined),
+      note: `hot spot: ${hotSpot(plan(c))}`,
+      value: t,
+      colour: VARIANT_COLOUR[variant]!,
+      text: `${fixed(t, 0)} s`,
+      hollow: HYPOTHETICAL.includes(variant),
+    };
+  });
 
   return (
     <Main>
@@ -178,6 +293,91 @@ export default function TransitPage(): JSX.Element {
             </table>
           </div>
         </details>
+      </Section>
+
+      <Section id="shared-wan" title="A shared WAN: queueing">
+        <p>
+          The closed forms assume the WAN is the training job&apos;s alone. The
+          simulation&apos;s discrete-event engine can share it: other jobs send
+          1 MB transfers at a given fraction of each inter-DC link&apos;s
+          capacity, queued first come, first served with the sync. This page
+          cannot rerun that (it needs the SimPy engine; the port has only the
+          closed forms), so the animation and the table below are the
+          simulation&apos;s <strong>recorded</strong> runs, from its
+          results.json and results.md section 9, at seed 0.
+        </p>
+        <WanQueue rows={queueRows()} testId="queue" />
+        <p>
+          At 0.9 load, AdamW&apos;s step grows from{" "}
+          {q9(VARIANT_NAME.adamw, "Closed form (ms)")} ms to{" "}
+          {q9(VARIANT_NAME.adamw, "Load 0.9")} ms, because it sends the most
+          bytes over the WAN; E′, which sends only the band sum across it, from{" "}
+          {q9(`${VARIANT_NAME["band-switch"]} [free]`, "Closed form (ms)")} ms
+          to {q9(`${VARIANT_NAME["band-switch"]} [free]`, "Load 0.9")} ms. In
+          these runs a busy WAN hurts most the variants that send most across
+          it; the closed forms, and so the break-evens above, leave this out.
+        </p>
+        <details className="my-4 min-w-0 text-sm">
+          <summary className="focus-ring min-h-11 cursor-pointer rounded py-2 font-medium">
+            results.md section 9, as recorded (mean step in ms)
+          </summary>
+          <MdTable t={t9} label="Queueing table" />
+        </details>
+      </Section>
+
+      <Section
+        id="extrapolations"
+        title="Extrapolations: bigger models, rarer syncs"
+      >
+        <Callout kind="extrapolation">
+          <p>
+            Nothing in this section was measured. The experiment ran one model
+            size ({fixed(SETUP.params / 1e6, 1)}M parameters), {SETUP.workers}{" "}
+            workers and {fixed(SETUP.steps, 0)} steps, syncing every step. Here
+            the simulation keeps the measured steps to {target} and changes the
+            size or the sync interval: an assumption the experiment did not
+            test. Read these as what the model implies if the steps held, not as
+            results.
+          </p>
+        </Callout>
+        <h3 className="mt-6 text-base font-semibold">Model size</h3>
+        <p>
+          Bytes scale with the parameter count by each variant&apos;s measured
+          bytes per parameter, and compute with it too. At the Llama-3-8B shape
+          ({trim(llama / 1e9, 3)}B parameters, {BASE}) the order is unchanged:
+          top-k fastest, the fixed band on the GPU slower than AdamW because it
+          needs more steps, and the in-transit variants slowest, bound by the
+          module. The E and E′ rows use E&apos;s steps, so they also carry the
+          hypothesis (one seed). Chart: computed by the port (the same closed
+          forms, at that size); table: results.md&apos;s.
+        </p>
+        <DotPlot
+          rows={sizeRows}
+          domain={[300, 10000]}
+          logScale
+          bars
+          ticks={[300, 1000, 3000, 10000]}
+          format={(v) => `${trim(v, 3)} s`}
+          axisLabel={`EXTRAPOLATED seconds to ${target} at the Llama-3-8B shape, if the measured steps held (log; hollow: hypothetical)`}
+          testId="extrapolate-size"
+        />
+        <MdTable t={t10a} label="Model-size extrapolation table" />
+        <h3 className="mt-8 text-base font-semibold">
+          Syncing every H steps (DiLoCo-style)
+        </h3>
+        <p>
+          Syncing every H steps instead of every step divides each step&apos;s
+          communication by H. The steps to {target} are assumed unchanged, which
+          is the larger assumption: DiLoCo also changes the optimiser. On this
+          100 GbE WAN, E′ is already slower than AdamW at H = 1 (
+          {q10h(`${VARIANT_NAME["band-switch"]} [free]`, "H = 1: time (s)")} s
+          against {q10h(VARIANT_NAME.adamw, "H = 1: time (s)")} s); at H = 100
+          AdamW takes {q10h(VARIANT_NAME.adamw, "H = 100")} s and E′{" "}
+          {q10h(`${VARIANT_NAME["band-switch"]} [free]`, "H = 100")} s. Rarer
+          syncs shrink the very communication the band saves, and with it the
+          band&apos;s only advantage.
+        </p>
+        <MdTable t={t10b} label="Sync-interval extrapolation table" />
       </Section>
 
       <Section id="what-it-says" title="What the simulation says">

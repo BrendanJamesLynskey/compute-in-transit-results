@@ -51,3 +51,7 @@ export const BreakEven = dynamic(() => import("./BreakEven"), {
   ssr: false,
   loading: loading("break-even curves"),
 });
+export const WanQueue = dynamic(() => import("./WanQueue"), {
+  ssr: false,
+  loading: loading("shared-WAN animation"),
+});

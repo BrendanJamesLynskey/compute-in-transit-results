@@ -105,3 +105,42 @@ test("the header links every page and the series hub; the home page links the fi
         .first(),
     ).toBeVisible();
 });
+
+test("the home page says why it exists and what it found, before the charts", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const why = page.getByRole("heading", { name: "Why this exists" });
+  const found = page.getByRole("heading", { name: "What it found" });
+  await expect(why).toBeVisible();
+  await expect(found).toBeVisible();
+  // eight process steps, each a link to where it happened
+  const steps = page.getByTestId("process").locator("li a");
+  await expect(steps).toHaveCount(8);
+  for (const href of await steps.evaluateAll((as) =>
+    as.map((a) => a.getAttribute("href")),
+  ))
+    expect(href).toMatch(/^(\/|https:\/\/)/);
+  await expect(
+    page.getByTestId("process").locator('li[data-tone="fail"]'),
+  ).toHaveCount(1);
+  // six findings; the optics one is labelled a hypothesis
+  const cards = page.getByTestId("findings").locator("li");
+  await expect(cards).toHaveCount(6);
+  await expect(
+    page
+      .locator('[data-finding="optics"]')
+      .getByText("hypothesis, not a result"),
+  ).toBeVisible();
+  await expect(
+    page.getByText("A negative result is still a result"),
+  ).toBeVisible();
+  // both come before the detailed charts
+  const y = async (l: import("@playwright/test").Locator) =>
+    (await l.boundingBox())!.y;
+  const chart = page.getByRole("heading", {
+    name: "The answer, in one picture",
+  });
+  expect(await y(found)).toBeLessThan(await y(chart));
+  expect(await y(why)).toBeLessThan(await y(found));
+});

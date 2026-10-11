@@ -9,10 +9,12 @@ simulation's pyproject pins it at 69ffd2b). Writes:
 
 * ``src/data/derived/transit_constants.json``: every input the TypeScript port (``src/lib/transit/model.ts``)
   needs, read from the package, never typed: the experiment's setup and payloads, the steps-to-loss ladder, the
-  device, the link presets, the three module settings of results.md, the band and sum kernels;
+  device, the link presets, the three module settings of results.md, the band and sum kernels, and section 10's
+  model sizes and sync intervals;
 * ``tests/fixtures/transit_parity.json``: the package's closed forms (``analytic.py``) and its discrete-event
   engine (``engine.py``, zero background load) over a grid of WAN bandwidths, topologies, variants and module
-  settings, and the module's stage times over a grid of compute budgets and bit planes. The unit tests require
+  settings, the module's stage times over a grid of compute budgets and bit planes, and section 10's
+  extrapolations (model size, sync every H steps) on the base topology. The unit tests require
   the port to equal the closed forms exactly and the engine to rounding.
 
 Floats are written with ``repr``, which round-trips to the same double in JavaScript.
@@ -39,7 +41,7 @@ def main(argv=None) -> int:
     a = ap.parse_args(argv)
     sys.path.insert(0, str(a.sim.resolve() / "src"))
 
-    from disagg_sim.hardware import LINKS
+    from disagg_sim.hardware import LINKS, LLAMA3_8B
     from training_transit_sim import analytic, inputs
     from training_transit_sim.engine import CATEGORIES, simulate
     from training_transit_sim.hardware import ALL_LINKS, MFU_DEFAULT, Module, Topology, band_kernel, sum_kernel
@@ -81,6 +83,9 @@ def main(argv=None) -> int:
         "sum_kernel_4": {"name": sk.name, "ops_per_byte": sk.ops_per_byte, "optical": sk.optical},
         "variants": {k: v["name"] for k, v in VARIANTS.items()},
         "categories": list(CATEGORIES),
+        # results.md section 10 (extrapolations): the model sizes (None: the experiment's) and the sync intervals
+        "extrapolate": {"sizes": [["15.8M (measured)", None], ["1B", 1e9], ["Llama-3-8B shape", float(LLAMA3_8B.params)]],
+                        "sync_every": [1, 10, 100]},
     }
 
     # ── parity: the closed forms and the engine over a grid ──
@@ -125,7 +130,20 @@ def main(argv=None) -> int:
                 t, stage = mod.stream_time(dense, band_kernel(planes=pl))
                 stages.append({"gflops": g, "planes": pl, "charged": charged, "stages": st, "stream": t,
                                "binding": stage})
-    parity = {"commit": COMMIT, "rows": rows, "stages": stages}
+    # section 10: the extrapolations (model size; sync every H steps), base topology, as results.py runs them
+    extrapolate = []
+    base = topologies["2x4"](12.5e9)
+    for v in VARIANTS:
+        for m in (("high", "free") if v in ("band-pluggable", "band-switch") else ("high",)):
+            for _, P in constants["extrapolate"]["sizes"]:
+                for H in constants["extrapolate"]["sync_every"]:
+                    p = plan(Config(v, base, module=modules[m], params=P, sync_every=H))
+                    r = simulate(p)
+                    extrapolate.append({"variant": v, "module": m, "params": P, "sync_every": H,
+                                        "compute_s": p.compute_s, "payload": p.payload, "dense": p.dense,
+                                        "sync": analytic.sync_time(p), "step": analytic.step_time(p),
+                                        "engine_step": r.step_time, "hot_spots": r.hot_spots()})
+    parity = {"commit": COMMIT, "rows": rows, "stages": stages, "extrapolate": extrapolate}
 
     outs = {CONSTANTS: json.dumps(constants, indent=1) + "\n", PARITY: json.dumps(parity) + "\n"}
     stale = [str(p.relative_to(ROOT)) for p, s in outs.items() if not p.exists() or p.read_text() != s]

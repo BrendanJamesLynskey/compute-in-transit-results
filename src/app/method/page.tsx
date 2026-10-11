@@ -118,8 +118,10 @@ export default function MethodPage(): JSX.Element {
           This site runs the closed forms only, ported to TypeScript. At zero
           background load the simulation&apos;s discrete-event engine reproduces
           them to rounding, and the port reproduces the engine&apos;s recorded
-          results (results.md sections 1 to 8). The simulation&apos;s queueing
-          on a shared WAN (section 9) needs the engine and is not on this site.
+          results (results.md sections 1 to 8, and the extrapolations of section
+          10). The simulation&apos;s queueing on a shared WAN (section 9) needs
+          the engine, so the transit page shows its recorded runs instead, and
+          says so.
         </p>
       </Section>
 
@@ -129,7 +131,11 @@ export default function MethodPage(): JSX.Element {
             One model size ({int(SETUP.params)} parameters), {SETUP.workers}{" "}
             workers and {int(SETUP.steps)} steps. Steps to a loss were measured
             only there; the simulation&apos;s larger models and DiLoCo-style
-            syncing are extrapolations, and this site shows neither.
+            syncing are extrapolations, and the transit page labels them so (
+            <Link className={A} href="/transit#extrapolations">
+              extrapolations
+            </Link>
+            ).
           </li>
           <li>
             The learning rate was tuned only on top-k and AdamW, and reused for

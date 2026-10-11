@@ -18,4 +18,5 @@ export const ANIMATIONS = [
   ["/optics", "clip"],
   ["/transit", "explorer"],
   ["/transit", "stages"],
+  ["/transit", "queue"],
 ] as const;

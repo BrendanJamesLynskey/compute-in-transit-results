@@ -4,7 +4,8 @@
  *   deeper       — "go deeper": the decks, the repositories, the papers;
  *   illustrative — flags numbers that are illustrative, not measured;
  *   hypothesis   — the repaired optics beating the exact band (one seed per run);
- *   hypothetical — the simulated variants that were never run (C′, E′).
+ *   hypothetical — the simulated variants that were never run (C′, E′);
+ *   extrapolation — results outside the experiment's setting (results.md section 10).
  * Server Component.
  */
 import type { ReactNode } from "react";
@@ -29,6 +30,10 @@ const STYLES = {
   hypothetical: {
     label: "Hypothetical variants",
     cls: "border-violet-300 bg-violet-50 dark:border-violet-800 dark:bg-violet-950/30",
+  },
+  extrapolation: {
+    label: "Extrapolation: outside the experiment",
+    cls: "border-2 border-amber-500 bg-amber-50 dark:border-amber-600 dark:bg-amber-950/30",
   },
 } as const;
 

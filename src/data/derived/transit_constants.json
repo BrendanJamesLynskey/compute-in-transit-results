@@ -313,5 +313,26 @@
   "module optics",
   "module compute",
   "FPGA"
- ]
+ ],
+ "extrapolate": {
+  "sizes": [
+   [
+    "15.8M (measured)",
+    null
+   ],
+   [
+    "1B",
+    1000000000.0
+   ],
+   [
+    "Llama-3-8B shape",
+    8029995008.0
+   ]
+  ],
+  "sync_every": [
+   1,
+   10,
+   100
+  ]
+ }
 }

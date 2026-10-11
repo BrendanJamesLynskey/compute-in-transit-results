@@ -88,6 +88,14 @@ export type SimResults = Record<string, unknown> & {
       to_target_j: number | null;
     }
   >;
+  /** Section 9: the engine's mean step (s) under background WAN load (discrete-event only). */
+  background: Record<
+    string,
+    { analytic: number; loads: number[]; step: number[]; wan_busy_09: number }
+  >;
+  /** Section 10: time to the target (s) at each model size, and syncing every H steps. */
+  extrapolate_size: Record<string, number[]>;
+  extrapolate_h: Record<string, number[]>;
 };
 
 export type VendoredFile = {

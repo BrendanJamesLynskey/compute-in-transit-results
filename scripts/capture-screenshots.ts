@@ -145,6 +145,7 @@ async function main(): Promise<void> {
         },
       ],
       ["/transit", "stages", (f) => scrubTo(f, 0), (f) => scrubTo(f, "end")],
+      ["/transit", "queue", (f) => scrubTo(f, 0), (f) => scrubTo(f, "end")],
       [
         "/transit",
         "breakeven",

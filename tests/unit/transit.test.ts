@@ -19,6 +19,7 @@ import {
   bandKernel,
   bisect,
   CATEGORIES,
+  EXTRAPOLATE,
   energyPerStep,
   gapOverBandwidth,
   hotSpot,
@@ -47,6 +48,8 @@ import {
   preset,
   TOPOLOGY_PRESETS,
 } from "@/lib/transit/presets";
+
+import { simResults } from "@/lib/data/load";
 
 import parity from "../fixtures/transit_parity.json";
 
@@ -364,5 +367,92 @@ describe("results.md, cell for cell", () => {
         ]);
       }
     expect(got).toEqual(t.rows);
+  });
+});
+
+describe("section 10: the extrapolations", () => {
+  const ext = (r: (typeof parity.extrapolate)[number]): Config => ({
+    ...at(r.variant as Variant, r.module as ModuleKey, BASE),
+    params: r.params ?? undefined,
+    syncEvery: r.sync_every,
+  });
+  it("the port equals analytic.py exactly and the engine to rounding, at every size and H", () => {
+    expect(parity.extrapolate.length).toBe(8 * 3 * 3);
+    for (const r of parity.extrapolate) {
+      const p = plan(ext(r));
+      const tag = `${r.variant} ${r.module} ${r.params} H=${r.sync_every}`;
+      expect(p.computeS, tag).toBe(r.compute_s);
+      expect(p.payload, tag).toBe(r.payload);
+      expect(p.dense, tag).toBe(r.dense);
+      expect(syncTime(p), tag).toBe(r.sync);
+      expect(stepTime(p), tag).toBe(r.step);
+      expect(Math.abs(stepTime(p) / r.engine_step - 1), tag).toBeLessThan(
+        1e-12,
+      );
+      const h = hotSpots(p);
+      for (const c of CATEGORIES)
+        expect(
+          Math.abs(h[c] - (r.hot_spots as Record<string, number>)[c]!),
+          `${tag} ${c}`,
+        ).toBeLessThan(1e-9);
+    }
+  });
+  it("results.md's model-size table, cell for cell", () => {
+    const t = tableAfter(MD, "## 10. Extrapolations", 0);
+    const got: string[][] = [];
+    for (const r of rowsFor(["high", "free"])) {
+      const cells = EXTRAPOLATE.sizes.map(([, P]) =>
+        reached(
+          timeTo({ ...at(r.variant, r.module, BASE), params: P ?? undefined }),
+        ),
+      );
+      const largest = EXTRAPOLATE.sizes.at(-1)![1]!;
+      got.push([
+        r.name,
+        ...cells,
+        hotSpot(plan({ ...at(r.variant, r.module, BASE), params: largest })),
+      ]);
+    }
+    expect(got).toEqual(t.rows);
+    expect(t.header.slice(1, 4)).toEqual(
+      EXTRAPOLATE.sizes.map(([k]) => `${k}: time (s)`),
+    );
+  });
+  it("results.md's sync-every-H table, cell for cell", () => {
+    const t = tableAfter(MD, "## 10. Extrapolations", 1);
+    const got = rowsFor(
+      ["free"],
+      ["adamw", "topk", "band-allreduce", "band-switch"],
+    ).map((r) => [
+      r.name,
+      ...EXTRAPOLATE.sync_every.map((H) =>
+        reached(timeTo({ ...at(r.variant, r.module, BASE), syncEvery: H })),
+      ),
+    ]);
+    expect(got).toEqual(t.rows);
+  });
+});
+
+describe("section 9: queueing on a shared WAN (recorded, discrete-event only)", () => {
+  it("results.json's recorded steps are results.md's cells, and load 0 is the port's closed form", () => {
+    const t = tableAfter(MD, "## 9. Queueing");
+    const bg = simResults().background;
+    const got = rowsFor(
+      ["free"],
+      ["adamw", "topk", "band", "band-allreduce", "band-switch"],
+    ).map((r) => {
+      const b = bg[r.name]!;
+      expect(b.loads).toEqual([0, 0.3, 0.6, 0.9]);
+      const closed = stepTime(plan(at(r.variant, r.module, BASE)));
+      expect(Math.abs(closed / b.analytic - 1)).toBeLessThan(1e-5);
+      return [
+        r.name,
+        fixed(closed * 1e3, 3),
+        ...b.step.map((s) => fixed(s * 1e3, 3)),
+        pct1(b.wan_busy_09),
+      ];
+    });
+    expect(got.map((r) => r[0])).toEqual(t.rows.map((r) => r[0]));
+    for (const r of got) expect(r).toEqual(row(t, r[0]!));
   });
 });
