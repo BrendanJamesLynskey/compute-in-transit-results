@@ -1,0 +1,317 @@
+{
+ "source": "BrendanJamesLynskey/Training_Transit_Sim",
+ "commit": "c6de1f4019547050ae7bacbb4ab13f9d9ee9586c",
+ "setup": {
+  "params": 15833472,
+  "workers": 8,
+  "seqs_per_worker": 8,
+  "context": 256,
+  "tokens_per_worker": 2048,
+  "steps": 3000
+ },
+ "payload_per_step": {
+  "A  AdamW, all-reduce": 31666944,
+  "B  DeMo, top-k, 2-D 64x64 chunks": 3957960,
+  "C  DeMo, fixed band, 1-D 256-point chunks": 1979184,
+  "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 6, 8 planes, full scale re-set every 100 steps, feedback of the band sent": 1979184,
+  "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 8, 8 planes, full scale re-set every 100 steps, feedback of the band sent": 1979184,
+  "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 10, 8 planes, full scale re-set every 100 steps, feedback of the band sent": 1979184,
+  "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 12, 8 planes, full scale re-set every 100 steps, feedback of the band sent": 1979184,
+  "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 8, 4 planes, full scale re-set every 100 steps, feedback of the band sent": 1979184,
+  "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 8, 12 planes, full scale re-set every 100 steps, feedback of the band sent": 1979184
+ },
+ "labels": {
+  "adamw": "A  AdamW, all-reduce",
+  "topk": "B  DeMo, top-k, 2-D 64x64 chunks",
+  "band": "C  DeMo, fixed band, 1-D 256-point chunks",
+  "optics": {
+   "6,8": "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 6, 8 planes, full scale re-set every 100 steps, feedback of the band sent",
+   "8,8": "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 8, 8 planes, full scale re-set every 100 steps, feedback of the band sent",
+   "10,8": "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 10, 8 planes, full scale re-set every 100 steps, feedback of the band sent",
+   "12,8": "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 12, 8 planes, full scale re-set every 100 steps, feedback of the band sent",
+   "8,4": "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 8, 4 planes, full scale re-set every 100 steps, feedback of the band sent",
+   "8,12": "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 8, 12 planes, full scale re-set every 100 steps, feedback of the band sent"
+  }
+ },
+ "targets": [
+  [
+   3.158,
+   "C"
+  ],
+  [
+   3.124,
+   "C"
+  ],
+  [
+   3.087,
+   "D"
+  ],
+  [
+   1.785,
+   "B"
+  ],
+  [
+   1.646,
+   "A"
+  ]
+ ],
+ "ladder": {
+  "A  AdamW, all-reduce": [
+   400.0,
+   400.0,
+   400.0,
+   2000.0,
+   null
+  ],
+  "B  DeMo, top-k, 2-D 64x64 chunks": [
+   400.0,
+   400.0,
+   400.0,
+   null,
+   null
+  ],
+  "C  DeMo, fixed band, 1-D 256-point chunks": [
+   2667.0,
+   null,
+   null,
+   null,
+   null
+  ],
+  "C  DeMo, fixed band, 1-D 64-point chunks": [
+   2800.0,
+   null,
+   null,
+   null,
+   null
+  ],
+  "C  DeMo, fixed band, 2-D 64x64 chunks": [
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  "D  DeMo, calibrated band, 2-D 64x64 chunks": [
+   2533.0,
+   2667.0,
+   null,
+   null,
+   null
+  ],
+  "E  DeMo, band via emulated optics, 1-D 256-point chunks, perfect optics (no quantisation or noise: C with power-of-2 chunks)": [
+   2800.0,
+   null,
+   null,
+   null,
+   null
+  ],
+  "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 8, 8 planes, full scale fixed, feedback of the band sent": [
+   1800.0,
+   2000.0,
+   2200.0,
+   null,
+   null
+  ],
+  "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 8, 4 planes, full scale re-set every 100 steps, feedback of the band sent": [
+   2600.0,
+   null,
+   null,
+   null,
+   null
+  ],
+  "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 6, 8 planes, full scale re-set every 100 steps, feedback of the band sent": [
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 8, 8 planes, full scale re-set every 100 steps, feedback of the band sent": [
+   1800.0,
+   2000.0,
+   2200.0,
+   null,
+   null
+  ],
+  "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 10, 8 planes, full scale re-set every 100 steps, feedback of the band sent": [
+   1600.0,
+   1800.0,
+   1800.0,
+   null,
+   null
+  ],
+  "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 12, 8 planes, full scale re-set every 100 steps, feedback of the band sent": [
+   1800.0,
+   2000.0,
+   2000.0,
+   null,
+   null
+  ],
+  "E  DeMo, band via emulated optics, 1-D 256-point chunks, ENOB 8, 12 planes, full scale re-set every 100 steps, feedback of the band sent": [
+   2000.0,
+   2000.0,
+   2200.0,
+   null,
+   null
+  ],
+  "F  DeMo, fixed high band, 2-D 64x64 chunks": [
+   null,
+   null,
+   null,
+   null,
+   null
+  ],
+  "F  DeMo, fixed random band, 2-D 64x64 chunks": [
+   1200.0,
+   1200.0,
+   1400.0,
+   null,
+   null
+  ],
+  "F  DeMo, fixed zigzag band, 2-D 64x64 chunks": [
+   2200.0,
+   2400.0,
+   2600.0,
+   null,
+   null
+  ]
+ },
+ "enobs": [
+  6,
+  8,
+  10,
+  12
+ ],
+ "planes": [
+  4,
+  8,
+  12
+ ],
+ "gpu_flops_per_value": {
+  "topk": 32.0,
+  "band": 20.0,
+  "band-allreduce": 20.0
+ },
+ "mfu": 0.4,
+ "accelerator": {
+  "name": "H100-SXM",
+  "peak_flops": 989000000000000.0,
+  "idle_w": 100.0,
+  "pj_per_flop": 1.0
+ },
+ "links": {
+  "ib-ndr": {
+   "name": "InfiniBand NDR 400G",
+   "bandwidth": 50000000000.0,
+   "latency": 1e-05,
+   "pj_per_bit": 15.0
+  },
+  "eth-100g": {
+   "name": "100 GbE",
+   "bandwidth": 12500000000.0,
+   "latency": 2e-05,
+   "pj_per_bit": 15.0
+  },
+  "eth-25g": {
+   "name": "25 GbE",
+   "bandwidth": 3125000000.0,
+   "latency": 2e-05,
+   "pj_per_bit": 15.0
+  },
+  "wan-400g": {
+   "name": "400G WAN (illustrative)",
+   "bandwidth": 50000000000.0,
+   "latency": 2e-05,
+   "pj_per_bit": 15.0
+  },
+  "wan-800g": {
+   "name": "800G WAN (illustrative)",
+   "bandwidth": 100000000000.0,
+   "latency": 2e-05,
+   "pj_per_bit": 15.0
+  }
+ },
+ "modules": {
+  "low": {
+   "placement": "pluggable",
+   "port_rate": 25000000000.0,
+   "optics_bits_per_s": 56000000000.0,
+   "planes": 8,
+   "enob": 8,
+   "gflops": 10000000000.0,
+   "transform_charged": true,
+   "fpga_ops_per_s": 50000000000.0,
+   "latency": 1e-06,
+   "static_w": 9.7,
+   "laser_w": 2.0,
+   "pj_per_bit": 2.76,
+   "caps_port": true
+  },
+  "high": {
+   "placement": "pluggable",
+   "port_rate": 25000000000.0,
+   "optics_bits_per_s": 56000000000.0,
+   "planes": 8,
+   "enob": 8,
+   "gflops": 99000000000.0,
+   "transform_charged": true,
+   "fpga_ops_per_s": 50000000000.0,
+   "latency": 1e-06,
+   "static_w": 9.7,
+   "laser_w": 2.0,
+   "pj_per_bit": 2.76,
+   "caps_port": true
+  },
+  "free": {
+   "placement": "pluggable",
+   "port_rate": 25000000000.0,
+   "optics_bits_per_s": 56000000000.0,
+   "planes": 8,
+   "enob": 8,
+   "gflops": 99000000000.0,
+   "transform_charged": false,
+   "fpga_ops_per_s": 50000000000.0,
+   "latency": 1e-06,
+   "static_w": 9.7,
+   "laser_w": 2.0,
+   "pj_per_bit": 2.76,
+   "caps_port": true
+  }
+ },
+ "band_kernel": {
+  "name": "band, 1-D 256, keep 0.0625, 8 planes",
+  "ops_per_byte": {
+   "fft": 10.0,
+   "gather": 0.0
+  },
+  "fpga_ops_per_value": 2.5,
+  "optical": true,
+  "bytes_per_value": 2.0,
+  "n": 256,
+  "keep": 0.0625
+ },
+ "sum_kernel_4": {
+  "name": "sum of 4 streams",
+  "ops_per_byte": {
+   "add": 0.375
+  },
+  "optical": false
+ },
+ "variants": {
+  "adamw": "A  AdamW, dense ring all-reduce",
+  "topk": "B  DeMo top-k, all-gather",
+  "band": "C  fixed band on the GPU, all-gather",
+  "band-pluggable": "E  band in transit (pluggable), all-gather",
+  "band-allreduce": "C' fixed band on the GPU, ring all-reduce (hypothetical)",
+  "band-switch": "E' band in transit, summed at the switch (hypothetical)"
+ },
+ "categories": [
+  "compute",
+  "intra-DC link",
+  "inter-DC link",
+  "module port",
+  "module optics",
+  "module compute",
+  "FPGA"
+ ]
+}

@@ -1,0 +1,145 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# The jobs of the companion sites' CI:
+#   - data: the vendored files are byte for byte the experiment's and the
+#     simulation's at the commits in VENDORED.json (scripts/vendor.py
+#     re-fetches them and re-exports the run logs), and the transit page's
+#     constants and parity fixtures regenerate unchanged from the
+#     simulation's own Python package (scripts/transit_reference.py);
+#   - lint, format and typecheck;
+#   - unit tests (the TypeScript port against the simulation's closed forms
+#     bit for bit and its engine to rounding; every reproducible cell of both
+#     results.md files; the vendored hashes; the naming check on the
+#     sources) with coverage thresholds;
+#   - e2e on a production build under --no-experimental-require-module;
+#   - Lighthouse CI (performance, accessibility, best practices >= 90),
+#     after the naming check on the build output.
+
+jobs:
+  lint-and-typecheck:
+    name: Lint & Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # pnpm version comes from `packageManager` in package.json.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm format:check
+      - run: pnpm lint
+      - run: pnpm typecheck
+
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:coverage
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 7
+
+  data:
+    name: Data and fixtures
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: The experiment and the simulation at the vendored commits
+        run: |
+          EXP=$(python3 -c "import json; print([f for f in json.load(open('VENDORED.json'))['vendored'] if 'DeMo' in f['source']][0]['commit'])")
+          SIM=$(python3 -c "import json; print([f for f in json.load(open('VENDORED.json'))['vendored'] if 'Transit' in f['source']][0]['commit'])")
+          git clone --quiet https://github.com/BrendanJamesLynskey/DeMo_Fixed_Band_Experiment.git ../DeMo_Fixed_Band_Experiment
+          git clone --quiet https://github.com/BrendanJamesLynskey/Training_Transit_Sim.git ../Training_Transit_Sim
+          git -C ../Training_Transit_Sim checkout --quiet "$SIM"
+          echo "experiment $EXP, simulation $SIM"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Vendored files and the run-log export are up to date
+        run: python scripts/vendor.py ../DeMo_Fixed_Band_Experiment ../Training_Transit_Sim --check
+      # the simulation's package (it pins disagg-sim at 69ffd2b in its pyproject)
+      - run: pip install ../Training_Transit_Sim
+      - name: The transit port's constants and parity fixtures are up to date
+        run: python scripts/transit_reference.py ../Training_Transit_Sim --check
+
+  e2e-tests:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: [data, lint-and-typecheck, unit-tests]
+    env:
+      CI: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test:e2e:install
+      # playwright.config.ts builds, then serves under
+      # `node --no-experimental-require-module` (see the comment there).
+      - run: pnpm test:e2e
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  lighthouse:
+    name: Lighthouse
+    runs-on: ubuntu-latest
+    needs: [data, lint-and-typecheck, unit-tests]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - name: The build output never names the module's developer
+        run: pnpm naming
+      # Starts `pnpm start`, audits seven pages three times each, and fails on
+      # any category below 0.9 (lighthouserc.json).
+      - run: pnpm lighthouse
+
+      - name: Upload Lighthouse reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-reports
+          path: .lighthouseci/
+          include-hidden-files: true
+          retention-days: 7

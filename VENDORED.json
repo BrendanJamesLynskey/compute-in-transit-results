@@ -1,0 +1,56 @@
+{
+  "vendored": [
+    {
+      "file": "src/data/vendor/experiment/results.json",
+      "source": "BrendanJamesLynskey/DeMo_Fixed_Band_Experiment",
+      "commit": "b1f62d394ac79250df9ce555d3a55d85cf1cd517",
+      "path": "results/tinystories-gpu/results.json",
+      "sha256": "62fb0a016ba2f21ce3a3af9ae2f6d77c11202ce2e7127436f24431a7ba80e520"
+    },
+    {
+      "file": "src/data/vendor/experiment/results.md",
+      "source": "BrendanJamesLynskey/DeMo_Fixed_Band_Experiment",
+      "commit": "b1f62d394ac79250df9ce555d3a55d85cf1cd517",
+      "path": "results/tinystories-gpu/results.md",
+      "sha256": "bf85a2b35d1f3a5b6aed392fa0781eabe3f55a45cfc1964c769b361633752618"
+    },
+    {
+      "file": "src/data/vendor/experiment/optics_investigation.md",
+      "source": "BrendanJamesLynskey/DeMo_Fixed_Band_Experiment",
+      "commit": "b1f62d394ac79250df9ce555d3a55d85cf1cd517",
+      "path": "docs/optics_investigation.md",
+      "sha256": "e32f1c59e548d400144308f017e770f94130f5a4ed9438f37c071115efd69176"
+    },
+    {
+      "file": "public/run_sweep.ipynb",
+      "source": "BrendanJamesLynskey/DeMo_Fixed_Band_Experiment",
+      "commit": "b1f62d394ac79250df9ce555d3a55d85cf1cd517",
+      "path": "colab/run_sweep.ipynb",
+      "sha256": "14193656b6d6b0f8be6b4809b1151624eeb42ebfb5393f1eaf9a4c4705c0a739"
+    },
+    {
+      "file": "src/data/vendor/sim/results.json",
+      "source": "BrendanJamesLynskey/Training_Transit_Sim",
+      "commit": "c6de1f4019547050ae7bacbb4ab13f9d9ee9586c",
+      "path": "examples/results.json",
+      "sha256": "d9ab5ddd9debd464024ba6e55c85273dbbef53858799390b9fed0f8894dc8b06"
+    },
+    {
+      "file": "src/data/vendor/sim/results.md",
+      "source": "BrendanJamesLynskey/Training_Transit_Sim",
+      "commit": "c6de1f4019547050ae7bacbb4ab13f9d9ee9586c",
+      "path": "examples/results.md",
+      "sha256": "c0e61290cd79fefb5d41f4fd068fe63a74fb2dcbc38da98e645672e3ae512f21"
+    }
+  ],
+  "derived": [
+    {
+      "file": "src/data/derived/runs.json",
+      "source": "BrendanJamesLynskey/DeMo_Fixed_Band_Experiment",
+      "commit": "b1f62d394ac79250df9ce555d3a55d85cf1cd517",
+      "path": "results/tinystories-gpu/*.jsonl",
+      "generated_by": "scripts/vendor.py",
+      "sha256": "6aa966b2dc785878eb1d3303e8391b05bd54812644c991fee87fcbc1d6c3976a"
+    }
+  ]
+}
