@@ -2,13 +2,15 @@
  * Site-wide header.
  *
  * Server Component, adapted from the companion sites' `SiteHeader` (same
- * layout and classes). This site is not in their cross-site switch: it
- * belongs to the Compute in Transit series, so the header links to the
- * series' hub instead.
+ * layout and classes). It carries their cross-site switch, where this site
+ * is "Compute in transit" in the LLM systems group, and, because it also
+ * belongs to the Compute in Transit series, a link to the series' hub.
  */
 import Link from "next/link";
 
 import { HUB_URL } from "@/lib/site";
+
+import { SiteSwitch } from "./SiteSwitch";
 
 const NAV = [
   { href: "/experiment", label: "Experiment" },
@@ -48,6 +50,12 @@ export function SiteHeader(): JSX.Element {
           >
             Series hub ↗
           </a>
+          {/* This nav wraps on phones, so the switch is pushed to the right
+              end of its line: its dropdown opens leftwards (right-0) and would
+              otherwise start off-screen. */}
+          <div className="ml-auto flex items-center lg:ml-0">
+            <SiteSwitch current="transit" />
+          </div>
         </nav>
       </div>
     </header>

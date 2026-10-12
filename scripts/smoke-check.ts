@@ -1,6 +1,7 @@
 /**
  * Smoke-check a deployment: every page and the notebook return 200 (no
- * redirects), each page carries its title, and no response names the
+ * redirects), each page carries its title and the companion sites'
+ * two-group switch (this site current), and no response names the
  * module's developer (the same check as scripts/check-naming.mjs).
  *
  *   pnpm smoke https://compute-in-transit-results.vercel.app
@@ -20,6 +21,15 @@ const PAGES: [string, string][] = [
   ["/run_sweep.ipynb", '"cells"'],
 ];
 
+/** The site switch, in every page's header (not in the notebook). */
+const SWITCH = [
+  'data-site-switch="full"',
+  'data-site-switch="compact"',
+  'href="https://compute-in-transit-results.vercel.app" title=',
+  'href="https://inference-tradeoffs-explained.vercel.app"',
+  'href="https://agent-context-explained.vercel.app"',
+];
+
 async function main(): Promise<void> {
   const base = (process.argv[2] ?? "").replace(/\/$/, "");
   if (!base) throw new Error("usage: smoke-check.ts <base url>");
@@ -34,6 +44,9 @@ async function main(): Promise<void> {
       body.includes(marker) || body.includes(marker.replace(/'/g, "&#x27;"));
     if (res.status !== 200) bad.push(`${path}: HTTP ${res.status}`);
     else if (!ok) bad.push(`${path}: no "${marker}"`);
+    else if (path.endsWith("/") || !path.includes("."))
+      for (const m of SWITCH)
+        if (!body.includes(m)) bad.push(`${path}: no switch marker ${m}`);
     if ((hits(body) as number[]).length)
       bad.push(`${path}: names the module's developer`);
     console.log(`${res.status} ${path}`);
