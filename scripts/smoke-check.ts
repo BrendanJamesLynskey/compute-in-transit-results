@@ -1,7 +1,7 @@
 /**
  * Smoke-check a deployment: every page and the notebook return 200 (no
  * redirects), each page carries its title and the companion sites'
- * two-group switch (this site current), and no response names the
+ * three-group switch (this site current), and no response names the
  * module's developer (the same check as scripts/check-naming.mjs).
  *
  *   pnpm smoke https://compute-in-transit-results.vercel.app
@@ -25,6 +25,8 @@ const PAGES: [string, string][] = [
 const SWITCH = [
   'data-site-switch="full"',
   'data-site-switch="compact"',
+  'href="https://agent-orchestration-explained.vercel.app"',
+  'data-site-group="training"',
   'href="https://compute-in-transit-results.vercel.app" title=',
   'href="https://inference-tradeoffs-explained.vercel.app"',
   'href="https://agent-context-explained.vercel.app"',

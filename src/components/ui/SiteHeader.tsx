@@ -3,7 +3,7 @@
  *
  * Server Component, adapted from the companion sites' `SiteHeader` (same
  * layout and classes). It carries their cross-site switch, where this site
- * is "Compute in transit" in the LLM systems group, and, because it also
+ * is "Compute in transit" in the Training group, and, because it also
  * belongs to the Compute in Transit series, a link to the series' hub.
  */
 import Link from "next/link";

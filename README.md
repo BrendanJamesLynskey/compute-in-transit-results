@@ -74,7 +74,7 @@ Updating the data (clones of the two repositories next to this one): `pnpm data`
 
 The Next.js app, the animation framework, the CI and the test harness come from the companion site
 [inference-tradeoffs-explained](https://github.com/BrendanJamesLynskey/inference-tradeoffs-explained). Its header carries
-those sites' cross-site switch (this site is "Compute in transit" in the LLM systems group), and it also belongs to
+those sites' cross-site switch (this site is "Compute in transit" in the Training group), and it also belongs to
 the Compute in Transit series, so the header links the series' hub too.
 
 ## Licence
