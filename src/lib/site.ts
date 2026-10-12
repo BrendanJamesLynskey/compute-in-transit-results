@@ -10,6 +10,12 @@ export const SITE_URL = "https://compute-in-transit-results.vercel.app";
 export const GITHUB_URL =
   "https://github.com/BrendanJamesLynskey/compute-in-transit-results";
 
+/**
+ * Part 2 (Training) of the Transformer Decoder Explainer, on its own
+ * address: explains the training concepts this site relies on.
+ */
+export const TRAINING_URL = "https://transformer-training-explained.vercel.app";
+
 /** The series' hub (GitHub Pages). */
 export const HUB_URL =
   "https://brendanjameslynskey.github.io/LLM_Hub_Compute_in_Transit/";

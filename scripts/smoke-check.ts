@@ -24,6 +24,7 @@ const PAGES: [string, string][] = [
 /** The site switch, in every page's header (not in the notebook). */
 const SWITCH = [
   'data-site-switch="menu"',
+  'href="https://transformer-training-explained.vercel.app"',
   'href="https://agent-orchestration-explained.vercel.app"',
   'data-site-group="training"',
   'href="https://inference-tradeoffs-explained.vercel.app"',
