@@ -108,8 +108,8 @@ export function WhyThisExists({ f }: { f: Findings }): JSX.Element {
         Why this exists
       </h2>
       <p className="mt-4 max-w-3xl text-lg text-neutral-800 dark:text-neutral-200">
-        I wanted to run a serious investigation in this area, and go through
-        the real process in detail.
+        I wanted to run a serious investigation in this area, and go through the
+        real process in detail.
       </p>
       <p className="mt-4 max-w-3xl text-neutral-700 dark:text-neutral-300">
         Computing on data while it moves through the network is an appealing
