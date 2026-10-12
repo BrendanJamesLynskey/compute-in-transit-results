@@ -1,6 +1,7 @@
 /**
  * Every page renders at desktop and phone widths, in light and dark mode,
- * with no page errors, no console errors and no horizontal overflow.
+ * with no page errors, no console errors and no horizontal overflow; and the
+ * companion sites' two-group switch is in the header, with this site current.
  */
 import { expect, test, type Page } from "@playwright/test";
 
@@ -87,7 +88,7 @@ test("the header links every page and the series hub; the home page links the fi
     "Notebook",
     "Method",
   ])
-    await expect(nav.getByRole("link", { name })).toBeVisible();
+    await expect(nav.getByRole("link", { name, exact: true })).toBeVisible();
   await expect(nav.getByRole("link", { name: /Series hub/ })).toHaveAttribute(
     "href",
     "https://brendanjameslynskey.github.io/LLM_Hub_Compute_in_Transit/",
@@ -104,6 +105,104 @@ test("the header links every page and the series hub; the home page links the fi
         .locator(`a[href="https://brendanjameslynskey.github.io/${repo}/"]`)
         .first(),
     ).toBeVisible();
+});
+
+test("the two-group site switch: a toggle and a row on desktop, a dropdown below lg", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/");
+  const full = page.locator("[data-site-switch='full']");
+  await expect(full).toBeVisible();
+  const llm = full.locator("nav[data-site-group='llm']");
+  const agents = full.locator("nav[data-site-group='agents']");
+  // starts on this site's group
+  await expect(llm).toBeVisible();
+  await expect(agents).toBeHidden();
+  await expect(
+    llm.getByRole("link", { name: "Compute in transit" }),
+  ).toHaveAttribute("aria-current", "true");
+  // the row fits inside the header, next to this site's own nav
+  const header = await page.getByRole("banner").locator("> div").boundingBox();
+  const row = await llm.boundingBox();
+  expect(row!.x + row!.width).toBeLessThanOrEqual(header!.x + header!.width);
+  for (const [name, href] of [
+    ["Decoder", "https://transformer-decoder-explained.vercel.app"],
+    ["Inference", "https://llm-inference-explained.vercel.app"],
+    ["Architectures", "https://llm-architectures-explained.vercel.app"],
+    ["Kernels", "https://gpu-kernels-explained.vercel.app"],
+    ["Numerics", "https://numerics-explained.vercel.app"],
+    ["Silicon", "https://systolic-arrays-explained.vercel.app"],
+    ["Trade-offs", "https://inference-tradeoffs-explained.vercel.app"],
+    ["Compute in transit", "https://compute-in-transit-results.vercel.app"],
+  ] as const)
+    await expect(llm.getByRole("link", { name })).toHaveAttribute("href", href);
+  // the toggle shows the agent sites (CSS only)
+  await full.getByText("Agents", { exact: true }).click();
+  await expect(agents).toBeVisible();
+  await expect(llm).toBeHidden();
+  await expect(agents.getByRole("link", { name: "Harnesses" })).toHaveAttribute(
+    "href",
+    "https://agent-harnesses-explained.vercel.app",
+  );
+  await expect(agents.getByRole("link", { name: "Protocols" })).toHaveAttribute(
+    "href",
+    "https://agent-protocols-explained.vercel.app",
+  );
+  await expect(agents.getByRole("link", { name: "Context" })).toHaveAttribute(
+    "href",
+    "https://agent-context-explained.vercel.app",
+  );
+  for (const soon of ["Orchestration", "Evals", "Security"]) {
+    await expect(agents.getByText(soon)).toBeVisible();
+    await expect(agents.getByRole("link", { name: soon })).toHaveCount(0);
+  }
+  // keyboard: the toggle is a pair of radio buttons
+  await page.getByRole("radio", { name: "Show the LLM systems sites" }).focus();
+  await page.keyboard.press("Space");
+  await expect(llm).toBeVisible();
+
+  // below lg (not sm): the dropdown
+  await page.setViewportSize({ width: 768, height: 800 });
+  await expect(full).toBeHidden();
+  const compact = page.locator("[data-site-switch='compact']");
+  await expect(compact).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 800 });
+  await expect(compact).toBeVisible();
+  await compact.locator("summary").click();
+  // the header wraps here, so the dropdown must still open on-screen
+  const panel = await compact.locator("summary + div").boundingBox();
+  expect(panel!.x).toBeGreaterThanOrEqual(0);
+  await expect(compact.getByText("LLM systems")).toBeVisible();
+  await expect(compact.getByText("Agents", { exact: true })).toBeVisible();
+  await expect(
+    compact.getByRole("link", { name: "Compute in transit" }),
+  ).toHaveAttribute("aria-current", "true");
+  await expect(
+    compact.getByRole("link", { name: "Harnesses" }),
+  ).toHaveAttribute("href", "https://agent-harnesses-explained.vercel.app");
+  await expect(
+    compact.getByRole("link", { name: "Protocols" }),
+  ).toHaveAttribute("href", "https://agent-protocols-explained.vercel.app");
+  await expect(compact.getByRole("link", { name: "Context" })).toHaveAttribute(
+    "href",
+    "https://agent-context-explained.vercel.app",
+  );
+  await expect(compact.getByText("Security")).toBeVisible();
+  await expect(compact.getByRole("link", { name: "Security" })).toHaveCount(0);
+  await expect(
+    compact.getByRole("link", { name: "Trade-offs" }),
+  ).toHaveAttribute("href", "https://inference-tradeoffs-explained.vercel.app");
+  const box = await compact
+    .getByRole("link", { name: "Decoder" })
+    .boundingBox();
+  expect(box!.height).toBeGreaterThanOrEqual(44);
+  const overflow = await page.evaluate(
+    () =>
+      document.scrollingElement!.scrollWidth -
+      document.scrollingElement!.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
 });
 
 test("the home page says why it exists and what it found, before the charts", async ({
