@@ -27,7 +27,6 @@ const SWITCH = [
   'data-site-switch="compact"',
   'href="https://agent-orchestration-explained.vercel.app"',
   'data-site-group="training"',
-  'href="https://compute-in-transit-results.vercel.app" title=',
   'href="https://inference-tradeoffs-explained.vercel.app"',
   'href="https://agent-context-explained.vercel.app"',
 ];
