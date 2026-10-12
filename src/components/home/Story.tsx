@@ -107,10 +107,10 @@ export function WhyThisExists({ f }: { f: Findings }): JSX.Element {
       <h2 id="why" className="text-xl font-semibold tracking-tight">
         Why this exists
       </h2>
-      <blockquote className="mt-4 max-w-3xl border-l-4 border-accent pl-4 text-lg italic text-neutral-800 dark:border-accent-light dark:text-neutral-200">
-        &ldquo;I wanted to run a serious investigation in this area, and go
-        through the real process in detail.&rdquo;
-      </blockquote>
+      <p className="mt-4 max-w-3xl text-lg text-neutral-800 dark:text-neutral-200">
+        I wanted to run a serious investigation in this area, and go through
+        the real process in detail.
+      </p>
       <p className="mt-4 max-w-3xl text-neutral-700 dark:text-neutral-300">
         Computing on data while it moves through the network is an appealing
         idea, and an easy one to sketch on a slide. I didn&apos;t want a sketch.
