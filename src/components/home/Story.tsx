@@ -108,14 +108,15 @@ export function WhyThisExists({ f }: { f: Findings }): JSX.Element {
         Why this exists
       </h2>
       <p className="mt-4 max-w-3xl text-lg text-neutral-800 dark:text-neutral-200">
-        I wanted to run a serious investigation in this area, and go through the
-        real process in detail.
+        I&apos;d read online about the possibility of computing on data in
+        transit, doing useful work on it as it crosses the network, for LLM
+        processing. I wanted to run a serious investigation in this area, and go
+        through the real process in detail.
       </p>
       <p className="mt-4 max-w-3xl text-neutral-700 dark:text-neutral-300">
-        Computing on data while it moves through the network is an appealing
-        idea, and an easy one to sketch on a slide. I didn&apos;t want a sketch.
-        I wanted one real question taken through the whole process: could a
-        photonic link module (
+        It&apos;s an appealing idea, and an easy one to sketch on a slide. I
+        didn&apos;t want a sketch. I wanted one real question taken through the
+        whole process: could a photonic link module (
         <a className={A} href={MODULE_PAPER}>
           arXiv:2608.21536
         </a>
