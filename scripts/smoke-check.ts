@@ -1,7 +1,7 @@
 /**
  * Smoke-check a deployment: every page and the notebook return 200 (no
  * redirects), each page carries its title and the companion sites'
- * three-group switch (this site current), and no response names the
+ * four-track switch (this site current), and no response names the
  * module's developer (the same check as scripts/check-naming.mjs).
  *
  *   pnpm smoke https://compute-in-transit-results.vercel.app
@@ -26,7 +26,10 @@ const SWITCH = [
   'data-site-switch="menu"',
   'href="https://transformer-training-explained.vercel.app"',
   'href="https://agent-orchestration-explained.vercel.app"',
-  'data-site-group="training"',
+  'data-site-group="foundations"',
+  'data-site-group="hardware"',
+  'data-site-place="transit"',
+  'data-site-key="inference"',
   'href="https://inference-tradeoffs-explained.vercel.app"',
   'href="https://agent-context-explained.vercel.app"',
 ];

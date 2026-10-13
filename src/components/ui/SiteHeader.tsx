@@ -3,14 +3,15 @@
  *
  * Server Component, adapted from the companion sites' `SiteHeader` (same
  * layout and classes). It carries their cross-site switch, where this site
- * is "Compute in transit" in the Training group, and, because it also
- * belongs to the Compute in Transit series, a link to the series' hub.
+ * is unlisted (in no track), so its place reads just "Compute in transit",
+ * and, because it also belongs to the Compute in Transit series, a link to
+ * the series' hub.
  */
 import Link from "next/link";
 
 import { HUB_URL } from "@/lib/site";
 
-import { SiteSwitch } from "./SiteSwitch";
+import { placeOf, SitePlace, SiteSwitch } from "./SiteSwitch";
 
 const NAV = [
   { href: "/experiment", label: "Experiment" },
@@ -27,9 +28,11 @@ export function SiteHeader(): JSX.Element {
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-3 sm:px-6">
         <Link
           href="/"
-          className="focus-ring rounded font-mono text-sm font-medium tracking-tight"
+          title={placeOf("transit").title}
+          data-site-brand
+          className="focus-ring whitespace-nowrap rounded text-sm tracking-tight"
         >
-          compute-in-transit-results
+          <SitePlace current="transit" />
         </Link>
         <nav
           aria-label="Site"
