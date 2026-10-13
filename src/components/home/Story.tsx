@@ -119,9 +119,12 @@ export function WhyThisExists({ f }: { f: Findings }): JSX.Element {
       </p>
       <p className="mt-3 max-w-3xl text-neutral-700 dark:text-neutral-300">
         <strong>What was found:</strong> a negative result at this scale. The
-        fixed low band ends at {f.lowMin} to {f.lowMax}, against {f.topk} for
-        top-k and {f.adamw} for AdamW, and a pluggable module computing it never
-        breaks even with AdamW in the simulation.{" "}
+        measure is the model&apos;s <strong>validation loss</strong> after 3,000
+        training steps: its cross-entropy on held-out text, in nats per token
+        (lower is better). Synced through the fixed low band, the model ends at{" "}
+        {f.lowMin} to {f.lowMax}, against {f.topk} with top-k and {f.adamw} with
+        plain AdamW, and a pluggable module computing the band never breaks even
+        with AdamW in the simulation.{" "}
         <a className={A} href="#found">
           The findings
         </a>{" "}
@@ -207,7 +210,7 @@ export function WhatItFound({ f }: { f: Findings }): JSX.Element {
     {
       key: "band",
       big: `${f.lowMin}–${f.lowMax}`,
-      bigNote: `final loss; top-k ${f.topk}, AdamW ${f.adamw}`,
+      bigNote: `final validation loss; top-k ${f.topk}, AdamW ${f.adamw}`,
       title: "A fixed band is no substitute for top-k at this scale",
       body: (
         <>
@@ -236,7 +239,7 @@ export function WhatItFound({ f }: { f: Findings }): JSX.Element {
     {
       key: "optics",
       big: `${f.firstMin}–${f.firstMax}`,
-      bigNote: `final loss of the first optics runs; repaired ${f.repMin}–${f.repMax}`,
+      bigNote: `final validation loss of the first optics runs; repaired ${f.repMin}–${f.repMax}`,
       title: "The emulated optics first diverged, then trained",
       body: (
         <>
