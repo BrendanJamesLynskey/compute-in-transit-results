@@ -270,6 +270,24 @@ describe("the drawings", () => {
       expect(p).not.toMatch(/NaN|undefined/);
     }
   });
+  it("every label is at least 11 px (the site's phone standard), at every stage", () => {
+    const sizes = (svg: string) =>
+      [...svg.matchAll(/font-size="([0-9.]+)"/g)].map((m) => Number(m[1]));
+    const bytes = chainBytes();
+    for (const mode of ["E", "Eprime"] as const) {
+      const run = chainRun(INP, { planes: 12, enob: 6, mode, seed: 1 });
+      for (const s of chainStages(run, INP, bytes))
+        for (const w of [1000, 360]) {
+          const all = [
+            ...sizes(viewSvg(s.view, w)),
+            ...sizes(diagramSvg(w, mode, s.block, [])),
+            ...sizes(legendSvg(w)),
+            ...(s.bytes ? sizes(bytesSvg(s.bytes, bytes, w)) : []),
+          ];
+          expect(Math.min(...all)).toBeGreaterThanOrEqual(11);
+        }
+    }
+  });
   it("the legend names every source", () => {
     for (const w of [800, 340]) {
       const l = legendSvg(w);

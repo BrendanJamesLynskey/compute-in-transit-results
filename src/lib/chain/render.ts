@@ -116,7 +116,7 @@ export function diagramSvg(
     : [["tx"], ["module"], ["net"], ["rx"]];
   const gap = narrow ? 18 : 22;
   const colW = (width - gap * (cols.length - 1)) / cols.length;
-  const bh = 40;
+  const bh = 46;
   const vg = 12;
   const head = 22;
   const boxes: Box[] = [];
@@ -127,7 +127,7 @@ export function diagramSvg(
     let y = 0;
     for (const g of groups) {
       heads.push(
-        `<text x="${n2(x + (narrow ? 22 : 0))}" y="${n2(y + 14)}" font-size="11" font-weight="600" fill="currentColor">${esc(GROUP_NAME(g, mode))}</text>`,
+        `<text x="${n2(x + (narrow ? 22 : 0))}" y="${n2(y + 14)}" font-size="12" font-weight="600" fill="currentColor">${esc(GROUP_NAME(g, mode))}</text>`,
       );
       y += head;
       for (const b of BLOCKS.filter((b) => b.group === g)) {
@@ -179,11 +179,11 @@ export function diagramSvg(
     const b = BLOCKS.find((x) => x.id === bx.id)!;
     const on = bx.id === active;
     const past = done.includes(bx.id);
-    const tagW = b.tags.length * 15 + 6;
+    const tagW = b.tags.length * 17 + 6;
     const full = blockLabel(b.id, mode);
     // monospace-ish estimate (0.58 em a character): the short label when the long one would not fit
     const label =
-      full.length * 11.5 * 0.58 > bx.w - tagW - 10 ? SHORT[b.id](mode) : full;
+      full.length * 12 * 0.58 > bx.w - tagW - 10 ? SHORT[b.id](mode) : full;
     const sub =
       b.id === "net"
         ? mode === "Eprime"
@@ -193,13 +193,13 @@ export function diagramSvg(
     parts.push(
       `<g data-block="${b.id}" data-active="${on}" opacity="${on || past ? 1 : 0.55}">` +
         `<rect x="${n2(bx.x)}" y="${n2(bx.y)}" width="${n2(bx.w)}" height="${bx.h}" rx="6" fill="${on ? C.band : C.box}" stroke="${on ? C.a : C.line}" stroke-width="${on ? 2.5 : 1}"/>` +
-        `<text x="${n2(bx.x + 7)}" y="${n2(bx.y + 16)}" font-size="11.5" font-weight="${on ? 700 : 500}" fill="currentColor">${esc(label)}</text>` +
-        `<text x="${n2(bx.x + 7)}" y="${n2(bx.y + 31)}" font-size="10" fill="currentColor" opacity="0.75">${esc(sub)}</text>` +
+        `<text x="${n2(bx.x + 7)}" y="${n2(bx.y + 18)}" font-size="12" font-weight="${on ? 700 : 500}" fill="currentColor">${esc(label)}</text>` +
+        `<text x="${n2(bx.x + 7)}" y="${n2(bx.y + 37)}" font-size="11" fill="currentColor" opacity="0.75">${esc(sub)}</text>` +
         b.tags
           .map((t, i) => {
             const T = TAG[t];
-            const tx = bx.x + bx.w - 16 - i * 15;
-            return `<rect x="${n2(tx)}" y="${n2(bx.y + 4)}" width="13" height="13" rx="3" fill="${T.fill}"/><text x="${n2(tx + 6.5)}" y="${n2(bx.y + 14)}" font-size="9" font-weight="700" text-anchor="middle" fill="${T.ink}">${T.letter}</text>`;
+            const tx = bx.x + bx.w - 18 - i * 17;
+            return `<rect x="${n2(tx)}" y="${n2(bx.y + 4)}" width="15" height="15" rx="3" fill="${T.fill}"/><text x="${n2(tx + 7.5)}" y="${n2(bx.y + 15.5)}" font-size="11" font-weight="700" text-anchor="middle" fill="${T.ink}">${T.letter}</text>`;
           })
           .join("") +
         `</g>`,
@@ -227,7 +227,7 @@ export function legendSvg(width: number): string {
       .map((T, i) => {
         const x = (i % perRow) * cw;
         const y = Math.floor(i / perRow) * 20;
-        return `<rect x="${n2(x)}" y="${y + 3}" width="13" height="13" rx="3" fill="${T.fill}"/><text x="${n2(x + 6.5)}" y="${y + 13}" font-size="9" font-weight="700" text-anchor="middle" fill="${T.ink}">${T.letter}</text><text x="${n2(x + 18)}" y="${y + 14}" font-size="11" fill="currentColor">${esc(T.name)}</text>`;
+        return `<rect x="${n2(x)}" y="${y + 2}" width="15" height="15" rx="3" fill="${T.fill}"/><text x="${n2(x + 7.5)}" y="${y + 13.5}" font-size="11" font-weight="700" text-anchor="middle" fill="${T.ink}">${T.letter}</text><text x="${n2(x + 20)}" y="${y + 14}" font-size="11" fill="currentColor">${esc(T.name)}</text>`;
       })
       .join("") +
     `</svg>`
@@ -252,6 +252,7 @@ function legend(
 
 /** The data panel of a stage: the chunk's numbers at that point of the chain. */
 export function viewSvg(view: View, width: number): string {
+  const nar = width < 560;
   const L = 4;
   const R = width - 4;
   const top = 22;
@@ -295,14 +296,14 @@ export function viewSvg(view: View, width: number): string {
     parts.push(legend(view.series, L));
     if (view.band)
       parts.push(
-        `<text x="${n2(R)}" y="13" font-size="11" text-anchor="end" fill="currentColor">shaded: the band, positions 0–${view.band - 1} of ${m}</text>`,
+        `<text x="${n2(R)}" y="13" font-size="11" text-anchor="end" fill="currentColor">${nar ? `shaded: band 0–${view.band - 1}` : `shaded: the band, positions 0–${view.band - 1} of ${m}`}</text>`,
       );
   } else if (view.kind === "bits" || view.kind === "outputs") {
     const rows = view.kind === "bits" ? view.bits : view.rows;
     const P = rows.length;
     const m = rows[0]!.length;
     const lab = 54;
-    const rh = Math.max(7, Math.min(14, 150 / P));
+    const rh = Math.max(13, Math.min(16, 160 / P));
     h = top + P * rh + 8;
     const dx = (R - L - lab) / m;
     if (view.band)
@@ -312,7 +313,7 @@ export function viewSvg(view: View, width: number): string {
     rows.forEach((r, b) => {
       const y = top + (P - 1 - b) * rh;
       parts.push(
-        `<text x="${L}" y="${n2(y + rh - 1.5)}" font-size="${rh >= 10 ? 10 : 8}" fill="currentColor">${b === P - 1 && view.kind === "bits" ? "sign" : `plane ${b}`}</text>`,
+        `<text x="${L}" y="${n2(y + rh - 1.5)}" font-size="11" fill="currentColor">${b === P - 1 && view.kind === "bits" ? "sign" : `plane ${b}`}</text>`,
       );
       if (view.kind === "bits") {
         const d = r
@@ -337,13 +338,13 @@ export function viewSvg(view: View, width: number): string {
       }
     });
     parts.push(
-      `<text x="${L}" y="13" font-size="11" fill="currentColor">${view.kind === "bits" ? `${P} binary planes of ${m} values (filled = 1)` : `every output of each plane (√ scale); shaded: the ${view.band} read`}</text>`,
+      `<text x="${L}" y="13" font-size="11" fill="currentColor">${view.kind === "bits" ? `${P} binary planes of ${m} values (filled = 1)` : nar ? "all outputs (√ scale); shaded: read" : `every output of each plane (√ scale); shaded: the ${view.band} read`}</text>`,
     );
   } else if (view.kind === "planes") {
     const P = view.ideal.length;
     const k = view.ideal[0]!.length;
     const lab = 54;
-    const rh = Math.max(9, Math.min(16, 150 / P));
+    const rh = Math.max(14, Math.min(18, 160 / P));
     h = top + P * rh + 8;
     const mx = Math.max(
       1e-300,
@@ -355,7 +356,7 @@ export function viewSvg(view: View, width: number): string {
       const y = top + (P - 1 - b) * rh;
       const mid = y + rh / 2;
       parts.push(
-        `<text x="${L}" y="${n2(y + rh - 2)}" font-size="${rh >= 12 ? 10 : 8}" fill="currentColor">${P === 1 ? "band" : `plane ${b}`}</text>`,
+        `<text x="${L}" y="${n2(y + rh - 2)}" font-size="11" fill="currentColor">${P === 1 ? "band" : `plane ${b}`}</text>`,
       );
       r.forEach((v, j) => {
         const x = L + lab + j * cw;
@@ -374,7 +375,7 @@ export function viewSvg(view: View, width: number): string {
       });
     });
     parts.push(
-      `<text x="${L}" y="13" font-size="11" fill="currentColor">${view.read ? "grey: each plane's exact band; orange tick: as read, with noise (√ scale)" : `the ${k} band outputs of each plane (√ scale)`}</text>`,
+      `<text x="${L}" y="13" font-size="11" fill="currentColor">${view.read ? (nar ? "grey exact, orange as read (√)" : "grey: each plane's exact band; orange tick: as read, with noise (√ scale)") : `the ${k} band outputs of each plane (√ scale)`}</text>`,
     );
   } else if (view.kind === "values") {
     const k = view.series[0]!.values.length;
@@ -406,7 +407,7 @@ export function viewSvg(view: View, width: number): string {
       : view.rows;
     const k = rows[0]!.length;
     const lab = 62;
-    const rh = 15;
+    const rh = 16;
     h = top + rows.length * rh + 8;
     const mx = Math.max(1e-300, ...rows.flat().map(Math.abs));
     const cw = (R - L - lab) / k;
@@ -415,7 +416,7 @@ export function viewSvg(view: View, width: number): string {
       const mid = y + rh / 2;
       const isSum = !!view.sum && w === rows.length - 1;
       parts.push(
-        `<text x="${L}" y="${n2(y + rh - 3)}" font-size="10" fill="currentColor">${isSum ? "sum ÷ W" : `worker ${w}`}</text>`,
+        `<text x="${L}" y="${n2(y + rh - 3)}" font-size="11" fill="currentColor">${isSum ? "sum ÷ W" : `worker ${w}`}</text>`,
       );
       r.forEach((v, j) => {
         const hh = (Math.abs(v) / mx) * (rh / 2 - 1);
@@ -425,7 +426,7 @@ export function viewSvg(view: View, width: number): string {
       });
     });
     parts.push(
-      `<text x="${L}" y="13" font-size="11" fill="currentColor">each worker's ${k} band values${view.sum ? "; last row: the switch's sum ÷ workers" : ""}</text>`,
+      `<text x="${L}" y="13" font-size="11" fill="currentColor">${nar ? `${k} band values per worker` : `each worker's ${k} band values${view.sum ? "; last row: the switch's sum ÷ workers" : ""}`}</text>`,
     );
   }
   return `<svg viewBox="0 0 ${n2(width)} ${n2(h)}" width="100%" role="img" aria-label="The chunk's values at this stage" style="display:block">${parts.join("")}</svg>`;
