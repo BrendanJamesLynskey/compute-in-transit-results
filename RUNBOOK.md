@@ -47,8 +47,12 @@ the commits in `scripts/vendor.py` and `scripts/transit_reference.py`, check the
 ```bash
 pnpm data                  # copies the files, exports the run logs, records SHA-256s
 pnpm transit               # the port's constants and parity fixtures, from the simulation's package
+pnpm chain                 # the chain animation's inputs and fixture, from the experiment's own functions
 pnpm test                  # parity, every reproducible results.md cell, the run logs, the hashes, naming
 ```
+
+`pnpm chain` needs NumPy and PyTorch (the experiment's `.venv` has both). After changing `src/lib/chain/`, rebuild
+the decks' copy with `pnpm exec tsx scripts/build-chain-js.ts <out.js>` and inline it into the CiT hub and deck 04.
 
 The pages quote results.md cells by table and row, and the run-log views by results.json group: a lookup that no
 longer resolves fails the build.

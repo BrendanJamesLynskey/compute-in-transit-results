@@ -12,6 +12,7 @@ export const PAGES = [
 /** [page, test id] of every animation. */
 export const ANIMATIONS = [
   ["/", "hero-home"],
+  ["/", "chain"],
   ["/experiment", "loss-curves"],
   ["/energy", "energy"],
   ["/optics", "feedback"],
