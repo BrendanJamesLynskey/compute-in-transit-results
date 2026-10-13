@@ -29,6 +29,7 @@
     "data": "python3 scripts/vendor.py ../DeMo_Fixed_Band_Experiment ../Training_Transit_Sim",
     "data:check": "python3 scripts/vendor.py ../DeMo_Fixed_Band_Experiment ../Training_Transit_Sim --check",
     "transit": "../Training_Transit_Sim/.venv/bin/python scripts/transit_reference.py ../Training_Transit_Sim",
+    "chain": "../DeMo_Fixed_Band_Experiment/.venv/bin/python scripts/chain_reference.py ../DeMo_Fixed_Band_Experiment",
     "naming": "node scripts/check-naming.mjs .next public src",
     "smoke": "tsx scripts/smoke-check.ts"
   },

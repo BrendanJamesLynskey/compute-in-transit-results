@@ -12,6 +12,8 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
+import type { ChainInputs } from "@/lib/chain/model";
+
 import type {
   ExperimentResults,
   RunsFile,
@@ -67,3 +69,10 @@ export type Notebook = {
   }[];
   metadata: Record<string, unknown>;
 };
+
+/** The chain animation's illustrative inputs (scripts/chain_reference.py). */
+export const chainInputs = (): ChainInputs =>
+  once(
+    "chain",
+    () => JSON.parse(read("src/data/derived/chain_inputs.json")) as ChainInputs,
+  );

@@ -15,7 +15,9 @@ concurrency:
 #     simulation's at the commits in VENDORED.json (scripts/vendor.py
 #     re-fetches them and re-exports the run logs), and the transit page's
 #     constants and parity fixtures regenerate unchanged from the
-#     simulation's own Python package (scripts/transit_reference.py);
+#     simulation's own Python package (scripts/transit_reference.py), and
+#     the chain animation's fixture from the experiment's own functions
+#     (scripts/chain_reference.py);
 #   - lint, format and typecheck;
 #   - unit tests (the TypeScript port against the simulation's closed forms
 #     bit for bit and its engine to rounding; every reproducible cell of both
@@ -88,6 +90,10 @@ jobs:
       - run: pip install ../Training_Transit_Sim
       - name: The transit port's constants and parity fixtures are up to date
         run: python scripts/transit_reference.py ../Training_Transit_Sim --check
+      # the experiment's own functions (CPU PyTorch) against the chain animation's fixture
+      - run: pip install numpy && pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - name: The chain animation's inputs and parity fixture are up to date
+        run: python scripts/chain_reference.py ../DeMo_Fixed_Band_Experiment --check
 
   e2e-tests:
     name: E2E Tests

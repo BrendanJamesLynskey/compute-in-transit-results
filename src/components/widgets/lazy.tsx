@@ -55,3 +55,7 @@ export const WanQueue = dynamic(() => import("./WanQueue"), {
   ssr: false,
   loading: loading("shared-WAN animation"),
 });
+export const ChainDiagram = dynamic(() => import("./ChainDiagram"), {
+  ssr: false,
+  loading: loading("chain animation"),
+});

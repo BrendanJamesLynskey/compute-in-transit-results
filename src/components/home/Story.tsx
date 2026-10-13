@@ -107,6 +107,30 @@ export function WhyThisExists({ f }: { f: Findings }): JSX.Element {
       <h2 id="why" className="text-xl font-semibold tracking-tight">
         Why this exists
       </h2>
+      <p
+        className="mt-4 max-w-3xl rounded-lg border-l-4 border-accent bg-white px-4 py-3 text-lg text-neutral-900 dark:border-accent-light dark:bg-neutral-950 dark:text-neutral-100"
+        data-testid="goal"
+      >
+        <strong>The goal:</strong> compress gradient traffic on the wire{" "}
+        <strong>without sending indices</strong>, with the compression done{" "}
+        <strong>for free in the link</strong>. A fixed frequency band needs no
+        comparisons, so the optics can compute it in transit, and both ends
+        already know which coefficients are sent.
+      </p>
+      <p className="mt-3 max-w-3xl text-neutral-700 dark:text-neutral-300">
+        <strong>What was found:</strong> a negative result at this scale. The
+        fixed low band ends at {f.lowMin} to {f.lowMax}, against {f.topk} for
+        top-k and {f.adamw} for AdamW, and a pluggable module computing it never
+        breaks even with AdamW in the simulation.{" "}
+        <a className={A} href="#found">
+          The findings
+        </a>{" "}
+        and{" "}
+        <a className={A} href="#chain">
+          the proposed system, end to end
+        </a>{" "}
+        are below.
+      </p>
       <p className="mt-4 max-w-3xl text-lg text-neutral-800 dark:text-neutral-200">
         I&apos;d read online about the possibility of computing on data in
         transit, doing useful work on it as it crosses the network, for LLM

@@ -4,8 +4,9 @@ import { WhatItFound, WhyThisExists } from "@/components/home/Story";
 import { Callout } from "@/components/ui/Callout";
 import { A, Main, PageHeader } from "@/components/ui/Page";
 import { DotPlot, type DotRow } from "@/components/viz/DotPlot";
-import { LossCurves } from "@/components/widgets/lazy";
-import { simResults } from "@/lib/data/load";
+import { ChainDiagram, LossCurves } from "@/components/widgets/lazy";
+import { chainBytes } from "@/lib/chain/bytes";
+import { chainInputs, simResults } from "@/lib/data/load";
 import { lossSeries } from "@/lib/experiment/props";
 import { findings } from "@/lib/findings";
 import { fixed, trim } from "@/lib/format";
@@ -65,6 +66,7 @@ const PAGES = [
 export default function HomePage(): JSX.Element {
   const target = fixed(TARGETS[0]![0], 3);
   const found = findings();
+  const chain = chainInputs();
   const series = lossSeries();
   const show = [G.A, G.B, G.C1d256, G.Frandom, G.E10];
   const hero: string[] = [...show, G.C2d, G.D, G.E8, G.Ectrl];
@@ -177,6 +179,38 @@ export default function HomePage(): JSX.Element {
 
       <WhyThisExists f={found} />
       <WhatItFound f={found} />
+
+      <section className="mt-12" aria-labelledby="chain">
+        <h2 id="chain" className="text-xl font-semibold tracking-tight">
+          The proposed system, end to end
+        </h2>
+        <p className="mt-3 max-w-3xl text-neutral-700 dark:text-neutral-300">
+          Variant E, from a worker&apos;s gradient to the weight update on the
+          receiving GPU: the delta leaves the TX GPU in 1-D chunks of {chain.m},
+          the module writes each chunk onto light as bit planes, the optics
+          transforms it, and only the band&apos;s {chain.k} outputs are read and
+          sent: values, no indices. The receivers place them at the fixed
+          positions, average, invert the DCT and apply the sign; each sender
+          feeds back what it actually sent. Switch to E&prime; to see the band
+          computed and summed at the switch instead, the simulation&apos;s
+          hypothetical variant. Each block is tagged by where it comes from: the{" "}
+          <a className={A} href={MODULE_PAPER}>
+            module&apos;s paper
+          </a>
+          , the experiment&apos;s model, the simulation, or an assumption.
+        </p>
+        <ChainDiagram inputs={chain} bytes={chainBytes()} testId="chain" />
+        <Callout kind="illustrative">
+          <p>
+            The chunk&apos;s numbers are illustrative inputs (a smooth shared
+            signal plus each worker&apos;s noise, and an out-of-band residual)
+            from a seeded generator; every stage&apos;s arithmetic is the
+            experiment&apos;s, checked against its own functions. The byte
+            counts are the experiment&apos;s recorded ones, for the whole model,
+            per worker per step.
+          </p>
+        </Callout>
+      </section>
 
       <div className="mt-12 grid items-start gap-6">
         <div className="min-w-0">
