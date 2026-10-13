@@ -11,8 +11,8 @@ export const GITHUB_URL =
   "https://github.com/BrendanJamesLynskey/compute-in-transit-results";
 
 /**
- * Part 2 (Training) of the Transformer Decoder Explainer, on its own
- * address: explains the training concepts this site relies on.
+ * The Training site (Foundations track of the companion sites): explains
+ * the training concepts this site relies on.
  */
 export const TRAINING_URL = "https://transformer-training-explained.vercel.app";
 

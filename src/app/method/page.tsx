@@ -75,9 +75,9 @@ export default function MethodPage(): JSX.Element {
 
       <Callout kind="prereq">
         <p>
-          New to training? Part 2 of the Transformer Decoder Explainer trains a
-          small decoder in your browser and explains every training idea this
-          site uses: start with{" "}
+          New to training? The Training site (in the Foundations track of the
+          companion sites) trains a small decoder in your browser and explains
+          every training idea this site uses: start with{" "}
           <a
             className={A}
             href={`${TRAINING_URL}/training/11-data-parallelism`}
