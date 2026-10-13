@@ -29,7 +29,14 @@ import {
   type ChainInputs,
   type ChainParams,
 } from "@/lib/chain/model";
-import { bytesSvg, diagramSvg, legendSvg, viewSvg } from "@/lib/chain/render";
+import {
+  blockLabel,
+  bytesSvg,
+  diagramSvg,
+  legendSvg,
+  shortLabel,
+  viewSvg,
+} from "@/lib/chain/render";
 import { G, row } from "@/lib/quote";
 
 type PlaneFix = {
@@ -287,6 +294,15 @@ describe("the drawings", () => {
           expect(Math.min(...all)).toBeGreaterThanOrEqual(11);
         }
     }
+  });
+  it("every block has a short label no longer than its long one", () => {
+    for (const mode of ["E", "Eprime"] as const)
+      for (const b of BLOCKS) {
+        const sh = shortLabel(b.id, mode);
+        expect(sh.length).toBeGreaterThan(0);
+        expect(sh.length).toBeLessThanOrEqual(blockLabel(b.id, mode).length);
+        expect(sh.length).toBeLessThanOrEqual(20);
+      }
   });
   it("the legend names every source", () => {
     for (const w of [800, 340]) {

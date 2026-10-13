@@ -79,6 +79,10 @@ const SHORT: Record<Block, (m: ChainMode) => string> = {
   feedback: () => "error feedback",
 };
 
+/** A block's short label, for narrow boxes. */
+export const shortLabel = (id: Block, mode: ChainMode): string =>
+  SHORT[id](mode);
+
 /** A block's label (the network block depends on the variant). */
 export function blockLabel(id: Block, mode: ChainMode): string {
   if (id === "net")
