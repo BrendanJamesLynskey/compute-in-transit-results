@@ -136,7 +136,7 @@ test("the site switch: one Site menu listing every group, at every width", async
       training.getByRole("link", { name: "Training", exact: true }),
     ).toHaveAttribute(
       "href",
-      "https://transformer-decoder-explained.vercel.app/training",
+      "https://transformer-training-explained.vercel.app",
     );
     await expect(panel.getByText("Compute in transit")).toHaveCount(0);
     for (const [name, href] of [
@@ -229,4 +229,24 @@ test("the home page says why it exists and what it found, before the charts", as
   });
   expect(await y(found)).toBeLessThan(await y(chart));
   expect(await y(why)).toBeLessThan(await y(found));
+});
+
+test("the method page sends readers new to training to Part 2 on the training site", async ({
+  page,
+}) => {
+  await page.goto("/method");
+  const prereq = page.locator("[data-callout=prereq]");
+  await expect(prereq).toContainText("New to training?");
+  await expect(
+    prereq.getByRole("link", { name: "data parallelism and all-reduce" }),
+  ).toHaveAttribute(
+    "href",
+    "https://transformer-training-explained.vercel.app/training/11-data-parallelism",
+  );
+  await expect(
+    prereq.getByRole("link", { name: "training over slow links" }),
+  ).toHaveAttribute(
+    "href",
+    "https://transformer-training-explained.vercel.app/training/13-slow-links",
+  );
 });

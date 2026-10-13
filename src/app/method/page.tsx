@@ -26,6 +26,7 @@ import {
   MODULE_PAPER,
   repoFile,
   SIM_REPO,
+  TRAINING_URL,
 } from "@/lib/site";
 import { SETUP } from "@/lib/transit/model";
 
@@ -71,6 +72,25 @@ export default function MethodPage(): JSX.Element {
           them correctly.
         </p>
       </PageHeader>
+
+      <Callout kind="prereq">
+        <p>
+          New to training? Part 2 of the Transformer Decoder Explainer trains a
+          small decoder in your browser and explains every training idea this
+          site uses: start with{" "}
+          <a
+            className={A}
+            href={`${TRAINING_URL}/training/11-data-parallelism`}
+          >
+            data parallelism and all-reduce
+          </a>{" "}
+          (chapter 11), then{" "}
+          <a className={A} href={`${TRAINING_URL}/training/13-slow-links`}>
+            training over slow links
+          </a>{" "}
+          (chapter 13: top-k with error feedback, DeMo and DiLoCo).
+        </p>
+      </Callout>
 
       <Section id="experiment" title="The experiment">
         <p>
