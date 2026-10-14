@@ -17,6 +17,12 @@ export const SITE_URL = "https://compute-in-transit-results.vercel.app";
 export const GITHUB_URL =
   "https://github.com/BrendanJamesLynskey/compute-in-transit-results";
 
+/** The author, credited in one quiet line at the foot of the About page. */
+export const AUTHOR = {
+  name: "Brendan Lynskey",
+  url: "https://github.com/BrendanJamesLynskey",
+} as const;
+
 /**
  * The Training site (Foundations track of the companion sites): explains
  * the training concepts this site relies on.
