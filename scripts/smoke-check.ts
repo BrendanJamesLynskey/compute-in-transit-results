@@ -32,6 +32,7 @@ const SWITCH = [
   'data-site-group="hardware"',
   'href="https://ai-racks-explained.vercel.app"',
   'data-site-place="transit"',
+  'data-site-brand="true" class="focus-ring whitespace-nowrap rounded text-sm font-medium tracking-tight" href="/">Compute in Transit: Results</a>',
   'data-site-key="inference"',
   'href="https://inference-tradeoffs-explained.vercel.app"',
   'href="https://agent-context-explained.vercel.app"',

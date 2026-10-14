@@ -4,6 +4,13 @@
  * papers, and the Colab link.
  */
 
+/**
+ * This site's own name, as its header's brand and its title show it. (The
+ * site switch names it "Compute in transit" on its button: it is unlisted,
+ * in no track, so that is its place.)
+ */
+export const SITE_NAME = "Compute in Transit: Results";
+
 /** This site (production, once deployed). */
 export const SITE_URL = "https://compute-in-transit-results.vercel.app";
 
