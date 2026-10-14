@@ -18,6 +18,7 @@ import {
 import { fixed, int } from "@/lib/format";
 import { G, row } from "@/lib/quote";
 import {
+  AUTHOR,
   DEMO_PAPER,
   DISAGG_REPO,
   EXPERIMENT_REPO,
@@ -295,6 +296,15 @@ export default function MethodPage(): JSX.Element {
           </table>
         </div>
       </Section>
+      <p
+        className="mt-12 text-sm text-neutral-600 dark:text-neutral-400"
+        data-author-credit
+      >
+        Written and built by{" "}
+        <a className={A} href={AUTHOR.url}>
+          {AUTHOR.name}
+        </a>
+      </p>
     </Main>
   );
 }

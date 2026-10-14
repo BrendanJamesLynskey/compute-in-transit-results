@@ -21,6 +21,13 @@ const PAGES: [string, string][] = [
   ["/run_sweep.ipynb", '"cells"'],
 ];
 
+/** The author credit: the last line of /method, the page about the work (brief 35). */
+const CREDIT = [
+  'data-author-credit="true"',
+  "Written and built by",
+  'href="https://github.com/BrendanJamesLynskey">Brendan Lynskey</a>',
+];
+
 /** The site switch, in every page's header (not in the notebook). */
 const SWITCH = [
   'data-site-switch="menu"',
@@ -55,6 +62,9 @@ async function main(): Promise<void> {
     else if (path.endsWith("/") || !path.includes("."))
       for (const m of SWITCH)
         if (!body.includes(m)) bad.push(`${path}: no switch marker ${m}`);
+    if (path === "/method")
+      for (const m of CREDIT)
+        if (!body.includes(m)) bad.push(`${path}: no credit marker ${m}`);
     if ((hits(body) as number[]).length)
       bad.push(`${path}: names the module's developer`);
     console.log(`${res.status} ${path}`);
