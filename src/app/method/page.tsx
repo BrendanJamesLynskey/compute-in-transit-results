@@ -300,7 +300,7 @@ export default function MethodPage(): JSX.Element {
         className="mt-12 text-sm text-neutral-600 dark:text-neutral-400"
         data-author-credit
       >
-        Written and built by{" "}
+        Built by{" "}
         <a className={A} href={AUTHOR.url}>
           {AUTHOR.name}
         </a>

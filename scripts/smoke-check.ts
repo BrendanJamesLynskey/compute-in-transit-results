@@ -23,8 +23,7 @@ const PAGES: [string, string][] = [
 
 /** The author credit: the last line of /method, the page about the work (brief 35). */
 const CREDIT = [
-  'data-author-credit="true"',
-  "Written and built by",
+  'data-author-credit="true">Built by',
   'href="https://github.com/BrendanJamesLynskey">Brendan Lynskey</a>',
 ];
 
