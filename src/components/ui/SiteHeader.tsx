@@ -3,15 +3,17 @@
  *
  * Server Component, adapted from the companion sites' `SiteHeader` (same
  * layout and classes). It carries their cross-site switch, where this site
- * is unlisted (in no track), so its place reads just "Compute in transit",
- * and, because it also belongs to the Compute in Transit series, a link to
- * the series' hub.
+ * is unlisted (in no track), so its place on the switch's button reads just
+ * "Compute in transit", and, because it also belongs to the Compute in
+ * Transit series, a link to the series' hub. The brand shows the site's own
+ * name, "Compute in Transit: Results" (`SITE_NAME`), so it does not repeat
+ * the button.
  */
 import Link from "next/link";
 
-import { HUB_URL } from "@/lib/site";
+import { HUB_URL, SITE_NAME } from "@/lib/site";
 
-import { placeOf, SitePlace, SiteSwitch } from "./SiteSwitch";
+import { placeOf, SiteSwitch } from "./SiteSwitch";
 
 const NAV = [
   { href: "/experiment", label: "Experiment" },
@@ -30,9 +32,9 @@ export function SiteHeader(): JSX.Element {
           href="/"
           title={placeOf("transit").title}
           data-site-brand
-          className="focus-ring whitespace-nowrap rounded text-sm tracking-tight"
+          className="focus-ring whitespace-nowrap rounded text-sm font-medium tracking-tight"
         >
-          <SitePlace current="transit" />
+          {SITE_NAME}
         </Link>
         <nav
           aria-label="Site"
