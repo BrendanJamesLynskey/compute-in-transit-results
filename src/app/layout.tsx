@@ -11,10 +11,11 @@ import type { ReactNode } from "react";
 import { SiteFooter } from "@/components/ui/SiteFooter";
 import { SiteHeader } from "@/components/ui/SiteHeader";
 import { SITE_URL } from "@/lib/site";
+import { withShare } from "@/lib/share";
 
 import "./globals.css";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withShare("/", {
   metadataBase: new URL(SITE_URL),
   title: {
     default: "Compute in Transit: Results",
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
   },
   description:
     "Can a fixed frequency band replace DeMo's top-k so a photonic link module can compress gradients in transit? The experiment's loss curves, captured energy and emulated optics, the training-transit simulation's break-evens, and the Colab notebook that ran it.",
-};
+});
 
 export default function RootLayout({
   children,

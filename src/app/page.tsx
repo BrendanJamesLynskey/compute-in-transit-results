@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { WhatItFound, WhyThisExists } from "@/components/home/Story";
+import { CheckedStrip, StartButton } from "@/components/ui/Landing";
 import { Callout } from "@/components/ui/Callout";
 import { A, Main, PageHeader } from "@/components/ui/Page";
 import { DotPlot, type DotRow } from "@/components/viz/DotPlot";
@@ -161,24 +162,84 @@ export default function HomePage(): JSX.Element {
         title="Can a fixed band replace DeMo's top-k?"
       >
         <p>
-          <a className={A} href={DEMO_PAPER}>
-            DeMo
-          </a>{" "}
-          compresses each worker&apos;s momentum by keeping the top-k
-          coefficients of a chunked DCT. A photonic link module (
+          An investigation, measured end to end, of whether a fixed band can
+          stand in for DeMo&apos;s top-k so that a photonic link module (
           <a className={A} href={MODULE_PAPER}>
             arXiv:2608.21536
           </a>
-          ) can run the transform but not the comparisons top-k needs; a fixed
-          band of positions needs none. An experiment on a{" "}
-          {fixed(SETUP.params / 1e6, 1)}M-parameter model measured what the
-          substitution costs, and a simulation asked when computing the band in
-          the network could pay.
+          ) could compute it in the network.
         </p>
       </PageHeader>
+      <div className="mt-6">
+        <StartButton href="/experiment">
+          Start with the experiment →
+        </StartButton>
+      </div>
+      <div data-hero-figure className="mt-8 min-w-0">
+        <LossCurves
+          series={series.filter((s) => hero.includes(s.id))}
+          initial={show}
+          title="Validation loss over training"
+          summary="Mean over seeds, the band from the lowest to the highest seed. Toggle any configuration."
+          testId="hero-home"
+        />
+      </div>
+      <section className="mt-8" aria-labelledby="answer">
+        <h2 id="answer" className="text-xl font-semibold tracking-tight">
+          The answer, in one picture
+        </h2>
+        <p className="mt-3 max-w-3xl text-neutral-700 dark:text-neutral-300">
+          No. Top-k ends at {lossSd(G.B)}; the fixed low band at{" "}
+          {lossSd(G.C1d256)}, though it sends half top-k&apos;s bytes (
+          {mb(row(G.C1d256).wire_per_step)} against {mb(row(G.B).wire_per_step)}{" "}
+          a step on the wire). Even a random fixed set of positions (
+          {loss(G.Frandom)}, one seed) beats the low band, and the emulated
+          optics, once repaired, does no better than {loss(G.E10)}. AdamW, the
+          dense baseline, ends at {lossSd(G.A)}.
+        </p>
+      </section>
+      <CheckedStrip href="/method#checks">
+        Every vendored file is its source byte for byte at a pinned commit, the
+        TypeScript port reproduces every cell of the simulation&apos;s
+        results.md that it can, character for character, and the loss curves are
+        recomputed from the run logs.
+      </CheckedStrip>
+
+      <section className="mt-12" aria-labelledby="question">
+        <h2 id="question" className="text-xl font-semibold tracking-tight">
+          The question
+        </h2>
+        <div className="mt-3 max-w-3xl text-neutral-700 dark:text-neutral-300">
+          <p>
+            <a className={A} href={DEMO_PAPER}>
+              DeMo
+            </a>{" "}
+            compresses each worker&apos;s momentum by keeping the top-k
+            coefficients of a chunked DCT. A photonic link module (
+            <a className={A} href={MODULE_PAPER}>
+              arXiv:2608.21536
+            </a>
+            ) can run the transform but not the comparisons top-k needs; a fixed
+            band of positions needs none. An experiment on a{" "}
+            {fixed(SETUP.params / 1e6, 1)}M-parameter model measured what the
+            substitution costs, and a simulation asked when computing the band
+            in the network could pay.
+          </p>
+        </div>
+      </section>
 
       <WhyThisExists f={found} />
       <WhatItFound f={found} />
+
+      <h3 className="mt-12 text-base font-semibold">Final validation loss</h3>
+      <DotPlot
+        rows={finals}
+        domain={[1.5, 3.6]}
+        ticks={[1.5, 2, 2.5, 3, 3.5]}
+        format={(v) => fixed(v, 1)}
+        axisLabel="final validation loss (mean ± sd; hollow: one seed)"
+        testId="final-losses"
+      />
 
       <section className="mt-12" aria-labelledby="chain">
         <h2 id="chain" className="text-xl font-semibold tracking-tight">
@@ -211,41 +272,6 @@ export default function HomePage(): JSX.Element {
           </p>
         </Callout>
       </section>
-
-      <div className="mt-12 grid items-start gap-6">
-        <div className="min-w-0">
-          <h2 className="text-xl font-semibold tracking-tight">
-            The answer, in one picture
-          </h2>
-          <p className="mt-3 max-w-3xl text-neutral-700 dark:text-neutral-300">
-            No. Top-k ends at {lossSd(G.B)}; the fixed low band at{" "}
-            {lossSd(G.C1d256)}, though it sends half top-k&apos;s bytes (
-            {mb(row(G.C1d256).wire_per_step)} against{" "}
-            {mb(row(G.B).wire_per_step)} a step on the wire). Even a random
-            fixed set of positions ({loss(G.Frandom)}, one seed) beats the low
-            band, and the emulated optics, once repaired, does no better than{" "}
-            {loss(G.E10)}. AdamW, the dense baseline, ends at {lossSd(G.A)}.
-          </p>
-        </div>
-        <div className="min-w-0">
-          <LossCurves
-            series={series.filter((s) => hero.includes(s.id))}
-            initial={show}
-            title="Validation loss over training"
-            summary="Mean over seeds, the band from the lowest to the highest seed. Toggle any configuration."
-            testId="hero-home"
-          />
-        </div>
-      </div>
-      <h3 className="mt-8 text-base font-semibold">Final validation loss</h3>
-      <DotPlot
-        rows={finals}
-        domain={[1.5, 3.6]}
-        ticks={[1.5, 2, 2.5, 3, 3.5]}
-        format={(v) => fixed(v, 1)}
-        axisLabel="final validation loss (mean ± sd; hollow: one seed)"
-        testId="final-losses"
-      />
 
       <section className="mt-12">
         <h2 className="text-xl font-semibold tracking-tight">

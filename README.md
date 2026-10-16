@@ -78,6 +78,14 @@ those sites' cross-site switch (this site is unlisted there, in no track, so the
 "Compute in transit"), and it also belongs to
 the Compute in Transit series, so the header links the series' hub too.
 
+## Sharing
+
+Every page carries Open Graph and Twitter tags, titled and addressed as that page. The link-preview cards (1,200 × 630 PNG)
+are drawn at build time by [`src/app/_og/card.tsx`](src/app/_og/card.tsx), the same file on every companion site, from
+this site's [`src/lib/share.ts`](src/lib/share.ts): one for the site. The favicon
+([`src/app/icon.svg`](src/app/icon.svg)) is this site's own diamond (it sits outside the four tracks) with the letter C; [`/sitemap.xml`](src/app/sitemap.ts) lists every page and
+[`/robots.txt`](src/app/robots.ts) allows everything. [`tests/e2e/sharing.spec.ts`](tests/e2e/sharing.spec.ts) checks the tags, the cards, the icons, the sitemap and the landing page's start button, strip and hero. The cards are set in Noto Sans and Noto Sans Mono (subsets, SIL Open Font License 1.1: [`src/app/_og/OFL.txt`](src/app/_og/OFL.txt)).
+
 ## Licence
 
 MIT.

@@ -8,12 +8,13 @@ import { allGroups } from "@/lib/experiment/props";
 import { fixed, int } from "@/lib/format";
 import { row } from "@/lib/quote";
 import { COLAB_URL, EXPERIMENT_REPO, fileAt } from "@/lib/site";
+import { withShare } from "@/lib/share";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withShare("/notebook", {
   title: "The notebook",
   description:
     "The Colab notebook that ran the fixed-band DeMo sweep on GPUs: read it here, download it, or open it in Colab; with a guide to the GPU, the Drive copies, resuming, and the run time of each configuration.",
-};
+});
 
 export default function NotebookPage(): JSX.Element {
   const nb = notebook();
