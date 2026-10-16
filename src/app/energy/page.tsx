@@ -9,12 +9,13 @@ import { energyProps } from "@/lib/experiment/props";
 import { int } from "@/lib/format";
 import { energy, G, loss } from "@/lib/quote";
 import { deck } from "@/lib/site";
+import { withShare } from "@/lib/share";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withShare("/energy", {
   title: "Captured energy",
   description:
     "How much of the momentum's energy top-k, the fixed low band, zig-zag, high band and a random fixed set keep at the same k, over training, from the experiment's diagnostics.",
-};
+});
 
 export default function EnergyPage(): JSX.Element {
   const data = energyProps();

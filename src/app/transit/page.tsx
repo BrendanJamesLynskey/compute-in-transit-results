@@ -37,12 +37,13 @@ import {
 } from "@/lib/transit/model";
 import { BASE, preset, TOPOLOGY_PRESETS } from "@/lib/transit/presets";
 import { VARIANT_COLOUR } from "@/lib/viz/palette";
+import { withShare } from "@/lib/share";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withShare("/transit", {
   title: "The simulation",
   description:
     "Training_Transit_Sim live: time to a target loss against WAN bandwidth for six ways of syncing, the photonic link module's stages, break-even curves and the energy split.",
-};
+});
 
 const COMMIT = "c6de1f4019547050ae7bacbb4ab13f9d9ee9586c";
 

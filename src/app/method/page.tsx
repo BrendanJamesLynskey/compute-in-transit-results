@@ -30,12 +30,13 @@ import {
   TRAINING_URL,
 } from "@/lib/site";
 import { SETUP } from "@/lib/transit/model";
+import { withShare } from "@/lib/share";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withShare("/method", {
   title: "Method and limits",
   description:
     "How the fixed-band experiment and the training-transit simulation were run, what they did not test, what is illustrative, and the vendored files with their commits and SHA-256.",
-};
+});
 
 export default function MethodPage(): JSX.Element {
   const emd = experimentMd();

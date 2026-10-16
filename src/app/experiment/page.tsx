@@ -13,12 +13,13 @@ import { fixed, int } from "@/lib/format";
 import { expCell, G, lossSd, mb, row } from "@/lib/quote";
 import { deck, EXPERIMENT_REPO } from "@/lib/site";
 import { KIND_COLOUR } from "@/lib/viz/palette";
+import { withShare } from "@/lib/share";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withShare("/experiment", {
   title: "The experiment",
   description:
     "Validation-loss curves for every configuration of the fixed-band DeMo experiment, toggleable with seed bands; loss against cumulative wire bytes; the steps-to-loss ladder.",
-};
+});
 
 export default function ExperimentPage(): JSX.Element {
   const md = experimentMd();

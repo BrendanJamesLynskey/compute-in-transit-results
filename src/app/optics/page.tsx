@@ -12,12 +12,13 @@ import { fixed, pyG, trim } from "@/lib/format";
 import { G, loss, lossSd, row } from "@/lib/quote";
 import { deck, EXPERIMENT_REPO, fileAt } from "@/lib/site";
 import { KIND_COLOUR } from "@/lib/viz/palette";
+import { withShare } from "@/lib/share";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = withShare("/optics", {
   title: "The emulated optics",
   description:
     "Why the first emulated-optics runs diverged, the error-feedback fix (feed back what was sent), and how the repaired band depends on ENOB and bit planes.",
-};
+});
 
 const COMMIT = "b1f62d394ac79250df9ce555d3a55d85cf1cd517";
 
