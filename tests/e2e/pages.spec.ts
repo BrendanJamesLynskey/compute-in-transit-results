@@ -310,7 +310,7 @@ test("the site switch: four tracks, and the brand names the site and the button 
   await expect(site("decoder")).toBeFocused();
 });
 
-test("the home page says why it exists and what it found, before the charts", async ({
+test("the home page says why it exists and what it found, before the detailed charts", async ({
   page,
 }) => {
   await page.goto("/");
@@ -339,11 +339,11 @@ test("the home page says why it exists and what it found, before the charts", as
   await expect(
     page.getByText("A negative result is still a result"),
   ).toBeVisible();
-  // both come before the detailed charts
+  // both come before the detailed charts (the loss curves lead the page as its hero, brief 39)
   const y = async (l: import("@playwright/test").Locator) =>
     (await l.boundingBox())!.y;
   const chart = page.getByRole("heading", {
-    name: "The answer, in one picture",
+    name: "Final validation loss",
   });
   expect(await y(found)).toBeLessThan(await y(chart));
   expect(await y(why)).toBeLessThan(await y(found));

@@ -204,15 +204,6 @@ export default function HomePage(): JSX.Element {
         results.md that it can, character for character, and the loss curves are
         recomputed from the run logs.
       </CheckedStrip>
-      <h3 className="mt-8 text-base font-semibold">Final validation loss</h3>
-      <DotPlot
-        rows={finals}
-        domain={[1.5, 3.6]}
-        ticks={[1.5, 2, 2.5, 3, 3.5]}
-        format={(v) => fixed(v, 1)}
-        axisLabel="final validation loss (mean ± sd; hollow: one seed)"
-        testId="final-losses"
-      />
 
       <section className="mt-12" aria-labelledby="question">
         <h2 id="question" className="text-xl font-semibold tracking-tight">
@@ -239,6 +230,16 @@ export default function HomePage(): JSX.Element {
 
       <WhyThisExists f={found} />
       <WhatItFound f={found} />
+
+      <h3 className="mt-12 text-base font-semibold">Final validation loss</h3>
+      <DotPlot
+        rows={finals}
+        domain={[1.5, 3.6]}
+        ticks={[1.5, 2, 2.5, 3, 3.5]}
+        format={(v) => fixed(v, 1)}
+        axisLabel="final validation loss (mean ± sd; hollow: one seed)"
+        testId="final-losses"
+      />
 
       <section className="mt-12" aria-labelledby="chain">
         <h2 id="chain" className="text-xl font-semibold tracking-tight">
