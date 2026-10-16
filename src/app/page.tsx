@@ -7,6 +7,7 @@ import { A, Main, PageHeader } from "@/components/ui/Page";
 import { DotPlot, type DotRow } from "@/components/viz/DotPlot";
 import { ChainDiagram, LossCurves } from "@/components/widgets/lazy";
 import { chainBytes } from "@/lib/chain/bytes";
+import { digitalRates } from "@/lib/digital";
 import { chainInputs, simResults } from "@/lib/data/load";
 import { lossSeries } from "@/lib/experiment/props";
 import { findings } from "@/lib/findings";
@@ -68,6 +69,7 @@ export default function HomePage(): JSX.Element {
   const target = fixed(TARGETS[0]![0], 3);
   const found = findings();
   const chain = chainInputs();
+  const dig = digitalRates(chain.m, chain.k);
   const series = lossSeries();
   const show = [G.A, G.B, G.C1d256, G.Frandom, G.E10];
   const hero: string[] = [...show, G.C2d, G.D, G.E8, G.Ectrl];
@@ -159,15 +161,16 @@ export default function HomePage(): JSX.Element {
     <Main>
       <PageHeader
         kicker="Compute in Transit · results"
-        title="Can a fixed band replace DeMo's top-k?"
+        title="Can an optical link compress gradients as they cross the network?"
       >
-        <p>
-          An investigation, measured end to end, of whether a fixed band can
-          stand in for DeMo&apos;s top-k so that a photonic link module (
+        <p data-plain-answer>
+          A photonic link module (
           <a className={A} href={MODULE_PAPER}>
             arXiv:2608.21536
           </a>
-          ) could compute it in the network.
+          ) can transform data as it leaves a server. Could it compress training
+          gradients on their way across the network? This study built the
+          experiment and ran it: at this scale, no.
         </p>
       </PageHeader>
       <div className="mt-6">
@@ -188,6 +191,15 @@ export default function HomePage(): JSX.Element {
         <h2 id="answer" className="text-xl font-semibold tracking-tight">
           The answer, in one picture
         </h2>
+        <p className="mt-3 max-w-3xl text-neutral-700 dark:text-neutral-300">
+          Training across data centres is slowed by sending gradients over the
+          wide-area network, so compressing them helps. The compression the
+          optics can do (keep a fixed band of the transform) trains worse than
+          the compression it cannot do (keep the largest values), and the
+          simulation finds the case where computing in the link pays is narrow.
+          Below is the evidence, and what the hardware would need instead. In
+          the jargon: can a fixed band replace DeMo&apos;s top-k?
+        </p>
         <p className="mt-3 max-w-3xl text-neutral-700 dark:text-neutral-300">
           No. Top-k ends at {lossSd(G.B)}; the fixed low band at{" "}
           {lossSd(G.C1d256)}, though it sends half top-k&apos;s bytes (
@@ -271,6 +283,52 @@ export default function HomePage(): JSX.Element {
             per worker per step.
           </p>
         </Callout>
+      </section>
+
+      <section className="mt-12" aria-labelledby="why-optics" data-why-optics>
+        <h2 id="why-optics" className="text-xl font-semibold tracking-tight">
+          Why optics rather than digital logic in the NIC?
+        </h2>
+        <div className="mt-3 max-w-3xl space-y-3 text-neutral-700 dark:text-neutral-300">
+          <p>
+            It is the first question a hardware architect asks, and this study
+            does not settle it in either direction. What it can say:
+          </p>
+          <ul className="list-disc space-y-1 pl-6">
+            <li>
+              <strong>The arithmetic is not large.</strong> At the module&apos;s
+              port rate ({trim(dig.valuesPerS / 1e9, 3)} billion BF16 values a
+              second), computing the band directly takes {dig.bandMacPerValue}{" "}
+              multiply-adds per value ({trim(dig.bandFlops / 1e9, 3)} GFLOP/s),
+              and a fast transform of the whole {chain.m}-value chunk{" "}
+              {dig.fastMacPerValue} ({trim(dig.fastFlops / 1e9, 3)} GFLOP/s):
+              the same order as the {trim(dig.budgetLow / 1e9, 3)} to{" "}
+              {trim(dig.budgetHigh / 1e9, 3)} GFLOP/s budget the simulation
+              gives the module. A NIC, DPU or switch with a dedicated block of
+              that rate is a plausible design; its area and energy are not in
+              the sources used, so they are not costed here.
+            </li>
+            <li>
+              <strong>Digital logic can do what the optics cannot.</strong> A
+              digital block can compare, so it could keep the largest values
+              (top-k), which this experiment found trains better than any fixed
+              band ({lossSd(G.B)} against {lossSd(G.C1d256)}).
+            </li>
+            <li>
+              <strong>Even without new hardware the GPUs can do it.</strong> The
+              band computed on the GPUs and summed by an ordinary ring
+              all-reduce (C&prime; in the simulation) beats AdamW below {cpA[4]}{" "}
+              of WAN, and on the exact band&apos;s steps the switch-summed
+              module case (E&prime;) never beats it.
+            </li>
+          </ul>
+          <p>
+            Where optics could still win is outside what this study tested:
+            energy per operation for much larger transforms, or doing the work
+            in a link that is already there. Testing those cases would need
+            measured figures for both sides.
+          </p>
+        </div>
       </section>
 
       <section className="mt-12">
